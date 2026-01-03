@@ -1,10 +1,10 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { Component, ComponentOptions } from "../component.ts";
+import { Component, type ComponentOptions } from "../component.ts";
 
 import { BoxObject } from "../canvas/box.ts";
 import { TextObject } from "../canvas/text.ts";
 
-import { Computed, Signal } from "../signals/mod.ts";
+import { Computed, type Signal } from "../signals/mod.ts";
 import { signalify } from "../utils/signals.ts";
 
 export const FrameUnicodeCharacters = {
@@ -80,7 +80,9 @@ export class Frame extends Component {
   constructor(options: FrameOptions) {
     super(options);
     this.charMap = signalify(
-      typeof options.charMap === "string" ? FrameUnicodeCharacters[options.charMap] : options.charMap,
+      typeof options.charMap === "string"
+        ? FrameUnicodeCharacters[options.charMap]
+        : options.charMap,
     );
   }
 
@@ -97,7 +99,8 @@ export class Frame extends Component {
       zIndex: this.zIndex,
       value: new Computed(() => {
         const { topLeft, horizontal, topRight } = this.charMap.value;
-        return topLeft + horizontal.repeat(this.rectangle.value.width) + topRight;
+        return topLeft + horizontal.repeat(this.rectangle.value.width) +
+          topRight;
       }),
       rectangle: new Computed(() => {
         const { column, row } = this.rectangle.value;
@@ -115,7 +118,8 @@ export class Frame extends Component {
       zIndex: this.zIndex,
       value: new Computed(() => {
         const { bottomLeft, horizontal, bottomRight } = this.charMap.value;
-        return bottomLeft + horizontal.repeat(this.rectangle.value.width) + bottomRight;
+        return bottomLeft + horizontal.repeat(this.rectangle.value.width) +
+          bottomRight;
       }),
       rectangle: new Computed(() => {
         const { column, row, height } = this.rectangle.value;
@@ -125,7 +129,9 @@ export class Frame extends Component {
       }),
     });
 
-    const verticalCharMapSignal = new Computed(() => this.charMap.value.vertical);
+    const verticalCharMapSignal = new Computed(() =>
+      this.charMap.value.vertical
+    );
 
     const leftRectangle = { column: 0, row: 0, width: 1, height: 0 };
     const left = new BoxObject({

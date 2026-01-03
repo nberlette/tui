@@ -1,16 +1,16 @@
 // Copyright 2023 Im-Beast. MIT license.
 
 // TODO; on style change, dont update intersections, just clear current ones
-import { EmitterEvent, EventEmitter } from "../event_emitter.ts";
+import { type EmitterEvent, EventEmitter } from "../event_emitter.ts";
 
 import { moveCursor } from "../utils/ansi_codes.ts";
 import { SortedArray } from "../utils/sorted_array.ts";
 import { rectangleIntersection } from "../utils/numbers.ts";
 
 import type { ConsoleSize, Stdout } from "../types.ts";
-import { DrawObject } from "./draw_object.ts";
-import { Signal, SignalOfObject } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import type { DrawObject } from "./draw_object.ts";
+import type { Signal, SignalOfObject } from "../signals/mod.ts";
+import { signalify } from "../signals/signalify.ts";
 
 const textEncoder = new TextEncoder();
 
@@ -47,7 +47,9 @@ export class Canvas extends EventEmitter<CanvasEventMap> {
     this.frameBuffer = [];
     this.rerenderQueue = [];
     this.stdout = options.stdout;
-    this.drawnObjects = new SortedArray((a, b) => a.zIndex.peek() - b.zIndex.peek() || a.id - b.id);
+    this.drawnObjects = new SortedArray((a, b) =>
+      a.zIndex.peek() - b.zIndex.peek() || a.id - b.id
+    );
     this.updateObjects = [];
     this.resizeNeeded = false;
 
@@ -95,7 +97,11 @@ export class Canvas extends EventEmitter<CanvasEventMap> {
         continue;
       }
 
-      const intersection = rectangleIntersection(rectangle, object2.rectangle.peek(), true);
+      const intersection = rectangleIntersection(
+        rectangle,
+        object2.rectangle.peek(),
+        true,
+      );
 
       if (!intersection) continue;
 
@@ -124,7 +130,9 @@ export class Canvas extends EventEmitter<CanvasEventMap> {
     }
 
     let i = 0;
-    updateObjects.sort((a, b) => b.zIndex.peek() - a.zIndex.peek() || b.id - a.id);
+    updateObjects.sort((a, b) =>
+      b.zIndex.peek() - a.zIndex.peek() || b.id - a.id
+    );
 
     for (const object of updateObjects) {
       if (object.updated) continue;
@@ -182,7 +190,9 @@ export class Canvas extends EventEmitter<CanvasEventMap> {
 
         // This is required to render properly on windows
         if (drawSequence.length + cell.length > 1024) {
-          stdout.writeSync(textEncoder.encode(moveCursor(lastRow, lastColumn) + drawSequence));
+          stdout.writeSync(
+            textEncoder.encode(moveCursor(lastRow, lastColumn) + drawSequence),
+          );
           drawSequence = moveCursor(row, column);
         }
 
@@ -196,7 +206,9 @@ export class Canvas extends EventEmitter<CanvasEventMap> {
     }
 
     // Complete final loop draw sequence
-    stdout.writeSync(textEncoder.encode(moveCursor(lastRow, lastColumn) + drawSequence));
+    stdout.writeSync(
+      textEncoder.encode(moveCursor(lastRow, lastColumn) + drawSequence),
+    );
 
     this.emit("render");
   }

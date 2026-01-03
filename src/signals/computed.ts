@@ -7,7 +7,9 @@ import { activeSignals, trackDependencies } from "./dependency_tracking.ts";
 /** Thrown whenever someone tries to directly modify `Computed.value` */
 export class ComputedReadOnlyError extends Error {
   constructor() {
-    super("Computed is read-only, you can't (and shouldn't!) directly modify its value");
+    super(
+      "Computed is read-only, you can't (and shouldn't!) directly modify its value",
+    );
   }
 }
 
@@ -54,28 +56,31 @@ export class Computed<T> extends Signal<T> implements Dependant, Dependency {
     });
   }
 
-  get value(): T {
+  override get value(): T {
     activeSignals?.add(this);
     return this.$value;
   }
 
-  set value(_value: T) {
+  override set value(_value: T) {
     throw new ComputedReadOnlyError();
   }
 
-  jink(_value: T): never {
+  override jink(_value: T): never {
     throw new ComputedReadOnlyError();
   }
 
   update(cause: Dependency | Dependant): void {
     activeSignals?.add(this);
 
-    if (this.$value !== (this.$value = this.computable(cause)) || this.forceUpdateValue) {
+    if (
+      this.$value !== (this.$value = this.computable(cause)) ||
+      this.forceUpdateValue
+    ) {
       this.propagate(cause);
     }
   }
 
-  dispose(): void {
+  override dispose(): void {
     super.dispose();
 
     const { dependencies } = this;

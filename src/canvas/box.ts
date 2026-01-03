@@ -1,10 +1,10 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { DrawObject, DrawObjectOptions } from "./draw_object.ts";
-import { Signal, SignalOfObject } from "../signals/mod.ts";
+import { DrawObject, type DrawObjectOptions } from "./draw_object.ts";
+import type { Signal, SignalOfObject } from "../signals/mod.ts";
 
 import type { Rectangle } from "../types.ts";
-import { signalify } from "../utils/signals.ts";
-import { Subscription } from "../signals/types.ts";
+import { signalify } from "../signals/signalify.ts";
+import type { Subscription } from "../signals/types.ts";
 
 export interface BoxObjectOptions extends DrawObjectOptions {
   rectangle: Rectangle | SignalOfObject<Rectangle>;
@@ -40,17 +40,17 @@ export class BoxObject extends DrawObject<"box"> {
     };
   }
 
-  draw(): void {
+  override draw(): void {
     this.rectangle.subscribe(this.#rectangleSubscription);
     super.draw();
   }
 
-  erase(): void {
+  override erase(): void {
     this.rectangle.unsubscribe(this.#rectangleSubscription);
     super.erase();
   }
 
-  rerender(): void {
+  override rerender(): void {
     const { canvas, rerenderCells, omitCells } = this;
     const { frameBuffer, rerenderQueue } = canvas;
     const { rows, columns } = canvas.size.peek();
@@ -65,7 +65,10 @@ export class BoxObject extends DrawObject<"box"> {
     const viewRectangle = this.view.peek()?.rectangle?.peek();
     if (viewRectangle) {
       rowRange = Math.min(rowRange, viewRectangle.row + viewRectangle.height);
-      columnRange = Math.min(columnRange, viewRectangle.column + viewRectangle.width);
+      columnRange = Math.min(
+        columnRange,
+        viewRectangle.column + viewRectangle.width,
+      );
     }
 
     for (let row = rectangle.row; row < rerenderCells.length; ++row) {
@@ -85,7 +88,10 @@ export class BoxObject extends DrawObject<"box"> {
       const rerenderQueueRow = rerenderQueue[row] ??= new Set();
 
       for (const column of rerenderColumns) {
-        if (omitColumns?.has(column) || column < rectangle.column || column >= columnRange) {
+        if (
+          omitColumns?.has(column) || column < rectangle.column ||
+          column >= columnRange
+        ) {
           continue;
         }
 

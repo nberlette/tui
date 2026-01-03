@@ -1,7 +1,7 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { TextObject, TextRectangle } from "../canvas/text.ts";
-import { Component, ComponentOptions } from "../component.ts";
-import { Signal, SignalOfObject } from "../signals/mod.ts";
+import { TextObject, type TextRectangle } from "../canvas/text.ts";
+import { Component, type ComponentOptions } from "../component.ts";
+import type { Signal, SignalOfObject } from "../signals/mod.ts";
 import { signalify } from "../utils/signals.ts";
 
 export interface TextOptions extends Omit<ComponentOptions, "rectangle"> {
@@ -68,7 +68,9 @@ export class Text extends Component {
     super(options as unknown as ComponentOptions);
     this.text = signalify(options.text);
     this.overwriteRectangle = signalify(options.overwriteWidth ?? false);
-    this.multiCodePointSupport = signalify(options.multiCodePointSupport ?? false);
+    this.multiCodePointSupport = signalify(
+      options.multiCodePointSupport ?? false,
+    );
   }
 
   draw(): void {

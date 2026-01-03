@@ -13,7 +13,11 @@ export function fits(number: number, min: number, max: number): boolean {
 }
 
 /** Check whether {column} and {row} fit in {rectangle} boundaries */
-export function fitsInRectangle(column: number, row: number, rectangle: Rectangle): boolean {
+export function fitsInRectangle(
+  column: number,
+  row: number,
+  rectangle: Rectangle,
+): boolean {
   return (
     rectangle.width !== 0 && rectangle.height !== 0 &&
     column >= rectangle.column && column < rectangle.column + rectangle.width &&
@@ -23,7 +27,9 @@ export function fitsInRectangle(column: number, row: number, rectangle: Rectangl
 
 /** Check whether rectangle {a} is the same as rectangle {b} */
 export function rectangleEquals(a: Rectangle, b: Rectangle): boolean {
-  return (a === b) || (a.column === b.column && a.row === b.row && a.width === b.width && a.height === b.height);
+  return (a === b) ||
+    (a.column === b.column && a.row === b.row && a.width === b.width &&
+      a.height === b.height);
 }
 
 const intersectionObject = { column: 0, row: 0, width: 0, height: 0 };
@@ -40,9 +46,21 @@ const intersectionObject = { column: 0, row: 0, width: 0, height: 0 };
  *
  * **It gets reused to save CPU usage and minimize GC.**
  */
-export function rectangleIntersection(a: Rectangle, b: Rectangle, data?: false): boolean;
-export function rectangleIntersection(a: Rectangle, b: Rectangle, data: true): false | Rectangle;
-export function rectangleIntersection(a: Rectangle, b: Rectangle, data?: boolean): boolean | Rectangle {
+export function rectangleIntersection(
+  a: Rectangle,
+  b: Rectangle,
+  data?: false,
+): boolean;
+export function rectangleIntersection(
+  a: Rectangle,
+  b: Rectangle,
+  data: true,
+): false | Rectangle;
+export function rectangleIntersection(
+  a: Rectangle,
+  b: Rectangle,
+  data?: boolean,
+): boolean | Rectangle {
   const { column: c1, row: r1, width: w1, height: h1 } = a;
   if (w1 === 0 || h1 === 0) false;
   const { column: c2, row: r2, width: w2, height: h2 } = b;

@@ -1,24 +1,21 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { crayon } from "https://deno.land/x/crayon@3.3.3/mod.ts";
+// deno-lint-ignore-file no-import-prefix
+import { crayon } from "jsr:@crayon/crayon@4.0.0-alpha.4";
 
 import { Tui } from "../src/tui.ts";
-import { handleInput } from "../src/input.ts";
-import { handleKeyboardControls, handleMouseControls } from "../src/controls.ts";
-
 import { Button } from "../src/components/button.ts";
-
 import { GridLayout } from "../mod.ts";
 
 const tui = new Tui({
   style: crayon.bgBlack,
   refreshRate: 1000 / 60,
-});
+}).input().mouse().keyboard().dispatch().run();
 
-handleInput(tui);
-handleMouseControls(tui);
-handleKeyboardControls(tui);
-tui.dispatch();
-tui.run();
+// handleInput(tui);
+// handleMouseControls(tui);
+// handleKeyboardControls(tui);
+// tui.dispatch();
+// tui.run();
 
 const layout = new GridLayout(
   {
@@ -35,7 +32,19 @@ const layout = new GridLayout(
   },
 );
 
-const elements = ["a", "b", "c", "d", "f", "g", "h", "i", "j", "k", "l"] as const;
+const elements = [
+  "a",
+  "b",
+  "c",
+  "d",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
+] as const;
 let h = 0;
 let i = 0;
 for (const layoutId of elements) {

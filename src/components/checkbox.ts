@@ -1,6 +1,6 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { ComponentOptions } from "../component.ts";
-import { Computed, Signal } from "../signals/mod.ts";
+import type { ComponentOptions } from "../component.ts";
+import { Computed, type Signal } from "../signals/mod.ts";
 import { signalify } from "../utils/signals.ts";
 import { Button } from "./button.ts";
 
@@ -54,6 +54,8 @@ export class CheckBox extends Button {
 
   interact(method: "mouse" | "keyboard"): void {
     super.interact(method);
-    if (this.state.peek() === "active") this.checked.value = !this.checked.peek();
+    if (this.state.peek() === "active") {
+      this.checked.value = !this.checked.peek();
+    }
   }
 }

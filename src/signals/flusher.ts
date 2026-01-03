@@ -29,8 +29,9 @@ export class Flusher implements Dependency {
     this.dependants = new Set();
   }
 
-  depend(dependant: LazyDependant) {
+  depend(dependant: LazyDependant): this {
     this.dependants.add(dependant);
+    return this;
   }
 
   flush(): void {

@@ -1,5 +1,5 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { Signal } from "./signal.ts";
+import type { Signal } from "./signal.ts";
 
 export type Reactive<T> = T & {
   [IS_REACTIVE]: true;
@@ -7,9 +7,9 @@ export type Reactive<T> = T & {
   [CONNECTED_SIGNAL]: Signal<T>;
 };
 
-export const IS_REACTIVE = Symbol("reactive");
-export const ORIGINAL_REF = Symbol("original_ref");
-export const CONNECTED_SIGNAL = Symbol("connected_signal");
+export const IS_REACTIVE: unique symbol = Symbol("reactive");
+export const ORIGINAL_REF: unique symbol = Symbol("original_ref");
+export const CONNECTED_SIGNAL: unique symbol = Symbol("connected_signal");
 
 export function isReactive<T>(input: T): input is Reactive<T> {
   return input instanceof Object && IS_REACTIVE in input;
@@ -18,11 +18,8 @@ export function isReactive<T>(input: T): input is Reactive<T> {
 export function getConnectedSignal<T extends object>(
   input: T | Reactive<T>,
 ): Signal<T> {
-  if (isReactive(input)) {
-    return input[CONNECTED_SIGNAL];
-  }
-
-  throw "Failed to get connected signal as input isn't reactive";
+  if (isReactive(input)) return input[CONNECTED_SIGNAL];
+  throw new TypeError("Failed to get connected signal as input isn't reactive");
 }
 
 export function getOriginalRef<T extends object>(input: T | Reactive<T>): T {
@@ -30,16 +27,20 @@ export function getOriginalRef<T extends object>(input: T | Reactive<T>): T {
     return input[ORIGINAL_REF];
   }
 
-  throw "Failed to get original referenec as input isn't reactive";
+  throw new TypeError(
+    "Failed to get original reference as input isn't reactive",
+  );
 }
 
 /**
- * Replaces `set`, `delete` and `clear` methods in given map with ones that provide reactivity.
+ * Replaces `set`, `delete` and `clear` methods in given map with ones that
+ * provide reactivity.
  *
- * When map gets in any way updated `propagate` method gets called on provided signal.
+ * When map gets in any way updated `propagate` method gets called on provided
+ * signal.
  *
- * @param watchMapUpdates
- * Changes method of detecting value changes when `.set()` gets called.
+ * @param watchMapUpdates Changes method of detecting value changes when
+ * `.set()` gets called.
  *  - When set to `true` it checks whether value changed.
  *  - When set to `false` it checks whether map size changed (default).
  */
@@ -52,6 +53,9 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
     [IS_REACTIVE]: { value: true },
     [ORIGINAL_REF]: { value: map },
     [CONNECTED_SIGNAL]: { value: signal },
+    set: { value: $set, configurable: true },
+    clear: { value: $clear, configurable: true },
+    delete: { value: $delete, configurable: true },
   });
 
   type MapType = T extends Map<infer K, infer V> ? [K, V] : never;
@@ -60,10 +64,10 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
 
   const set = map.set.bind(map);
 
-  let $set: T["set"];
+  let _$set: T["set"];
 
   if (watchMapUpdates) {
-    $set = function $set(key: MapKeyType, value: MapValueType) {
+    _$set = function $set(key: MapKeyType, value: MapValueType) {
       const previousValue = map.get(key);
 
       set(key, value);
@@ -74,7 +78,7 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
       return map;
     };
   } else {
-    $set = function $step(key: MapKeyType, value: MapValueType) {
+    _$set = function $step(key: MapKeyType, value: MapValueType) {
       const { size } = map;
 
       set(key, value);
@@ -84,6 +88,10 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
       }
       return map;
     };
+  }
+
+  function $set(key: MapKeyType, value: MapValueType) {
+    return _$set(key, value);
   }
 
   const del = map.delete.bind(map);
@@ -104,12 +112,6 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
     }
   }
 
-  Object.defineProperties(map, {
-    set: { value: $set },
-    delete: { value: $delete },
-    clear: { value: $clear },
-  });
-
   return map;
 }
 
@@ -126,6 +128,9 @@ export function makeSetMethodsReactive<T extends Set<unknown>, S>(
     [IS_REACTIVE]: { value: true },
     [ORIGINAL_REF]: { value: set },
     [CONNECTED_SIGNAL]: { value: signal },
+    add: { value: $add },
+    clear: { value: $clear },
+    delete: { value: $delete },
   });
 
   const add = set.add.bind(set);
@@ -159,12 +164,6 @@ export function makeSetMethodsReactive<T extends Set<unknown>, S>(
       signal.propagate();
     }
   }
-
-  Object.defineProperties(set, {
-    add: { value: $add },
-    delete: { value: $delete },
-    clear: { value: $clear },
-  });
 
   return set;
 }

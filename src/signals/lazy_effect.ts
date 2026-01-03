@@ -1,5 +1,5 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { Effect, Effectable } from "./effect.ts";
+import { Effect, type Effectable } from "./effect.ts";
 import { Flusher } from "./flusher.ts";
 
 import type { Dependant, Dependency, LazyDependant } from "./types.ts";
@@ -45,7 +45,10 @@ export class LazyEffect extends Effect implements LazyDependant {
   constructor(effectable: Effectable, interval: number);
   constructor(effectable: Effectable, flusher: Flusher);
   constructor(effectable: Effectable, options: LazyEffectOptions);
-  constructor(effectable: Effectable, option: LazyEffectOptions | number | Flusher) {
+  constructor(
+    effectable: Effectable,
+    option: LazyEffectOptions | number | Flusher,
+  ) {
     super(effectable);
 
     if (option instanceof Flusher) {
@@ -63,13 +66,10 @@ export class LazyEffect extends Effect implements LazyDependant {
     this.lastFired = performance.now();
   }
 
-  update(cause: Dependency | Dependant): void {
+  override update(cause: Dependency | Dependant): void {
     const { flusher, interval } = this;
 
-    if (flusher) {
-      flusher.depend(this);
-    }
-
+    if (flusher) flusher.depend(this);
     if (interval) {
       const timeDifference = performance.now() - this.lastFired;
       if (timeDifference < interval) {

@@ -1,6 +1,6 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { Computable, Computed } from "./computed.ts";
-import { Dependency } from "./types.ts";
+import { type Computable, Computed } from "./computed.ts";
+import type { Dependency } from "./types.ts";
 import { Flusher } from "./flusher.ts";
 
 import type { LazyDependant } from "./types.ts";
@@ -13,9 +13,11 @@ interface LazyComputedOptions {
 }
 
 /**
- * LazyComputed is a type of signal that depends on other signals and updates when any of them changes
+ * LazyComputed is a type of signal that depends on other signals and updates
+ * when any of them changes
  * - If time between updates is smaller than given interval it gets delayed
- * - If given `Flusher` instead, it will update after `Flusher.flush()` gets called
+ * - If given `Flusher` instead, it will update after `Flusher.flush()` gets
+ *   called
  * - Both interval and `Flusher` might be set at the same time.
  *
  * @example
@@ -48,7 +50,10 @@ export class LazyComputed<T> extends Computed<T> implements LazyDependant {
   constructor(computable: Computable<T>, interval: number);
   constructor(computable: Computable<T>, flusher: Flusher);
   constructor(computable: Computable<T>, options: LazyComputedOptions);
-  constructor(computable: Computable<T>, option: LazyComputedOptions | number | Flusher) {
+  constructor(
+    computable: Computable<T>,
+    option: LazyComputedOptions | number | Flusher,
+  ) {
     super(computable);
 
     if (option instanceof Flusher) {
@@ -65,7 +70,7 @@ export class LazyComputed<T> extends Computed<T> implements LazyDependant {
     this.lastFired = performance.now();
   }
 
-  update(cause: Dependency): void {
+  override update(cause: Dependency): void {
     const { flusher, interval } = this;
 
     if (cause === this.flusher) {

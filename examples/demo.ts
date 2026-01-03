@@ -1,9 +1,13 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { crayon } from "https://deno.land/x/crayon@3.3.3/mod.ts";
+// deno-lint-ignore-file no-import-prefix
+import { crayon } from "jsr:@crayon/crayon@4.0.0-alpha.4";
 
 import { Tui } from "../src/tui.ts";
 import { handleInput } from "../src/input.ts";
-import { handleKeyboardControls, handleMouseControls } from "../src/controls.ts";
+import {
+  handleKeyboardControls,
+  handleMouseControls,
+} from "../src/controls.ts";
 
 import { Box } from "../src/components/box.ts";
 import { Text } from "../src/components/text.ts";
@@ -17,28 +21,27 @@ import { CheckBox } from "../src/components/checkbox.ts";
 import { ComboBox } from "../src/components/combobox.ts";
 import { ProgressBar } from "../src/components/progressbar.ts";
 
-import { Theme } from "../src/theme.ts";
+import type { Theme } from "../src/theme.ts";
 import { View } from "../src/view.ts";
-import { Component, Rectangle } from "../mod.ts";
+import type { Component, Rectangle } from "../mod.ts";
 import { TextBox } from "../src/components/textbox.ts";
 import { Computed, Signal } from "../src/signals/mod.ts";
 
 const tui = new Tui({
   style: crayon.bgBlack,
   refreshRate: 1000 / 60,
+}).run({
+  input: true,
+  mouse: true,
+  dispatch: true,
+  keyboard: true,
 });
-
-handleInput(tui);
-handleMouseControls(tui);
-handleKeyboardControls(tui);
-tui.dispatch();
-tui.run();
 
 const baseTheme: Theme = {
   base: crayon.bgLightBlue,
   focused: crayon.bgCyan,
   active: crayon.bgBlue,
-  disabled: crayon.bgLightBlack.black,
+  disabled: crayon.bgBlack.lightBlack,
 };
 
 new Box({
@@ -213,7 +216,8 @@ new Label({
     row: 21,
   },
   theme: { base: tui.style },
-  text: "Centered text\nThat automatically adjusts its size\n!@#!\nSo cool\nWOW",
+  text:
+    "Centered text\nThat automatically adjusts its size\n!@#!\nSo cool\nWOW",
   zIndex: 0,
 });
 
@@ -371,7 +375,12 @@ const viewBackground = new Box({
 // @ts-ignore-
 viewBackground.NOFRAME = true;
 
-const viewScrollbarRectangle: Rectangle = { column: 0, row: 0, width: 1, height: 0 };
+const viewScrollbarRectangle: Rectangle = {
+  column: 0,
+  row: 0,
+  width: 1,
+  height: 0,
+};
 const viewScrollbar = new Slider({
   parent: tui,
   min: 0,
@@ -382,7 +391,8 @@ const viewScrollbar = new Slider({
   adjustThumbSize: true,
   rectangle: new Computed(() => {
     const viewRectangle = view.rectangle.value;
-    viewScrollbarRectangle.column = viewRectangle.column + viewRectangle.width - 1;
+    viewScrollbarRectangle.column = viewRectangle.column + viewRectangle.width -
+      1;
     viewScrollbarRectangle.row = viewRectangle.row;
     viewScrollbarRectangle.height = viewRectangle.height;
     return viewScrollbarRectangle;

@@ -1,11 +1,14 @@
 // Copyright 2023 Im-Beast. MIT license.
 import { Signal } from "../signals/signal.ts";
-import { signalify } from "../utils/signals.ts";
+import { signalify } from "../signals/signalify.ts";
 
-import { LayoutInvalidElementsPatternError, LayoutMissingElementError } from "./errors.ts";
+import {
+  LayoutInvalidElementsPatternError,
+  LayoutMissingElementError,
+} from "./errors.ts";
 
 import type { Rectangle } from "../types.ts";
-import type { Layout, LayoutElement, LayoutOptions } from "./types.ts";
+import { Layout, type LayoutElement, type LayoutOptions } from "./layout.ts";
 import { Effect } from "../signals/effect.ts";
 
 /**
@@ -49,7 +52,7 @@ import { Effect } from "../signals/effect.ts";
  * });
  * ```
  */
-export class HorizontalLayout<T extends string> implements Layout<T> {
+export class HorizontalLayout<T extends string> extends Layout<T> {
   rectangle: Signal<Rectangle>;
 
   gapX: Signal<number>;
@@ -61,6 +64,8 @@ export class HorizontalLayout<T extends string> implements Layout<T> {
   elementNameToIndex: Map<T, number>;
 
   constructor(options: LayoutOptions<T>) {
+    super();
+
     this.totalUnitLength = 0;
 
     this.elements = [];
@@ -102,7 +107,9 @@ export class HorizontalLayout<T extends string> implements Layout<T> {
           elements[i] = {
             name: name,
             unitLength: 0,
-            rectangle: new Signal({ column: 0, height: 0, row: 0, width: 0 }, { deepObserve: true }),
+            rectangle: new Signal({ column: 0, height: 0, row: 0, width: 0 }, {
+              deepObserve: true,
+            }),
           };
         }
         key = i++;
@@ -137,7 +144,8 @@ export class HorizontalLayout<T extends string> implements Layout<T> {
       rectangle.height = height - gapY * 2;
       rectangle.row = row + gapY;
 
-      const currentElementWidth = (elementWidth - partDiff) * element.unitLength;
+      const currentElementWidth = (elementWidth - partDiff) *
+        element.unitLength;
 
       widthDiff += partDiff;
       if (widthDiff === 0) {
@@ -145,7 +153,6 @@ export class HorizontalLayout<T extends string> implements Layout<T> {
       }
 
       rectangle.width = currentElementWidth - gapX;
-
       rectangle.column = gapX + currentColumn + column;
       currentColumn += rectangle.width + gapX;
     }

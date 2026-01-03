@@ -5,9 +5,9 @@ import {
   makeObjectPropertiesReactive,
   makeSetMethodsReactive,
   ORIGINAL_REF,
-  Reactive,
+  type Reactive,
 } from "./reactivity.ts";
-import { Dependant, Dependency, Subscription } from "./types.ts";
+import type { Dependant, Dependency, Subscription } from "./types.ts";
 
 // TODO: Make dispose revert reactive value modifications
 
@@ -22,7 +22,8 @@ export interface SignalOptions<T> {
   /**
    * @requires T to be `typeof 'object'`
    *
-   * Whether to deeply observe object a.k.a. whether to watch changes in its properties.
+   * Whether to deeply observe object a.k.a. whether to watch changes in its
+   * properties.
    */
   deepObserve?: boolean;
   /**
@@ -30,10 +31,13 @@ export interface SignalOptions<T> {
    *
    * Changes the way `deepObserve` affects objects.
    *
-   *  - When set to `true` it creates `Proxy` which watches properties, even new ones.
-   *  - When set to `false` it uses `Object.defineProperty` to watch properties that existed at the time of creating signal.
+   *  - When set to `true` it creates `Proxy` which watches properties, even
+   *    new ones.
+   *  - When set to `false` it uses `Object.defineProperty` to watch properties
+   *    that existed at the time of creating signal.
    */
-  watchObjectIndex?: T extends Map<unknown, unknown> | Set<unknown> ? never : boolean;
+  watchObjectIndex?: T extends Map<unknown, unknown> | Set<unknown> ? never
+    : boolean;
   /**
    * @requires T to be `instanceof Map`
    *
@@ -48,7 +52,8 @@ export interface SignalOptions<T> {
 /**
  * Signal wraps value in a container.
  *
- * Each time you set the value it analyzes whether it changed and propagates update over all of its dependants.
+ * Each time you set the value it analyzes whether it changed and propagates
+ * update over all of its dependants.
  *
  * @example
  * ```ts
@@ -76,14 +81,22 @@ export class Signal<T> implements Dependency {
       } else if (value instanceof Map) {
         value = makeMapMethodsReactive(value, this, options.watchMapUpdates);
       } else {
-        value = makeObjectPropertiesReactive(value, this, options.watchObjectIndex);
+        value = makeObjectPropertiesReactive(
+          value,
+          this,
+          options.watchObjectIndex,
+        );
       }
     }
     this.$value = value;
   }
 
   /** Bind function to signal, it'll be called each time signal's value changes and is equal to {conditionValues} */
-  when(conditionValue: T, subscription: Subscription<T>, abortSignal?: AbortSignal): void {
+  when(
+    conditionValue: T,
+    subscription: Subscription<T>,
+    abortSignal?: AbortSignal,
+  ): void {
     this.whenSubscriptions ??= new Map();
 
     const { whenSubscriptions } = this;
@@ -227,11 +240,24 @@ export class Signal<T> implements Dependency {
   toString(): string {
     return `${this.$value}`;
   }
+
+  [Symbol.dispose](): void {
+    this.dispose();
+  }
+
+  [Symbol.toPrimitive](hint: "number"): number;
+  [Symbol.toPrimitive](hint: "string" | "default"): string;
+  [Symbol.toPrimitive](hint: "string" | "number" | "default"): string | number;
+  [Symbol.toPrimitive](hint: "string" | "number" | "default"): string | number {
+    if (hint === "number") return Number(this.$value);
+    return String(this.$value);
+  }
 }
 
 /**
- * Type that defines signal, which doesn't implement any properties that `T` type has.
- * This is used to enhance DX for typing unions between objects and Signals.
+ * Type that defines signal, which doesn't implement any properties that `T`
+ * type has. This is used to enhance DX for typing unions between objects and
+ * Signals.
  *
  * @example
  * ```ts

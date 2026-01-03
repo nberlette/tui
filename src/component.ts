@@ -1,15 +1,15 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { Tui } from "./tui.ts";
-import { hierarchizeTheme, Style, Theme } from "./theme.ts";
-import { EmitterEvent, EventEmitter } from "./event_emitter.ts";
+import type { Tui } from "./tui.ts";
+import { hierarchizeTheme, type Style, type Theme } from "./theme.ts";
+import { type EmitterEvent, EventEmitter } from "./event_emitter.ts";
 
 import type { Rectangle } from "./types.ts";
 import { SortedArray } from "./utils/sorted_array.ts";
-import { DrawObject } from "./canvas/draw_object.ts";
-import { View } from "./view.ts";
-import { InputEventRecord } from "./input_reader/mod.ts";
-import { Computed, Signal, SignalOfObject } from "./signals/mod.ts";
-import { signalify } from "./utils/signals.ts";
+import type { DrawObject } from "./canvas/draw_object.ts";
+import type { View } from "./view.ts";
+import type { InputEventRecord } from "./input_reader/mod.ts";
+import { Computed, Signal, type SignalOfObject } from "./signals/mod.ts";
+import { signalify } from "./signals/signalify.ts";
 
 export interface ComponentOptions {
   tui?: Tui;
@@ -61,7 +61,8 @@ export class Component extends EventEmitter<
     this.parent = options.parent;
 
     const { parent } = this;
-    const tui = this.tui = options.tui ?? ("tui" in parent ? parent.tui : parent);
+    const tui = this.tui = options.tui ??
+      ("tui" in parent ? parent.tui : parent);
 
     this.parent.children.push(this);
     this.children = new SortedArray();
@@ -76,7 +77,10 @@ export class Component extends EventEmitter<
     this.view = signalify(options.view);
     this.zIndex = signalify(options.zIndex);
     this.visible = signalify(options.visible ?? true);
-    this.rectangle = signalify(options.rectangle, { deepObserve: true, watchObjectIndex: true });
+    this.rectangle = signalify(options.rectangle, {
+      deepObserve: true,
+      watchObjectIndex: true,
+    });
 
     this.visible.subscribe((visible) => {
       if (this.#destroyed) return;

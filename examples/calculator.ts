@@ -1,11 +1,15 @@
 // Copyright 2023 Im-Beast. MIT license.
+// deno-lint-ignore-file no-import-prefix
 // Simple calculator demo using grid layout
 
-import { crayon } from "https://deno.land/x/crayon@3.3.3/mod.ts";
+import { crayon } from "jsr:@crayon/crayon@4.0.0-alpha.4";
 
 import { Tui } from "../src/tui.ts";
 import { handleInput } from "../src/input.ts";
-import { handleKeyboardControls, handleMouseControls } from "../src/controls.ts";
+import {
+  handleKeyboardControls,
+  handleMouseControls,
+} from "../src/controls.ts";
 
 import { Button } from "../src/components/button.ts";
 
@@ -38,7 +42,8 @@ const layout = new GridLayout(
   },
 );
 
-type ElementName = typeof layout["elementNameToIndex"] extends Map<infer K, unknown> ? K : never;
+type ElementName = typeof layout["elementNameToIndex"] extends
+  Map<infer K, unknown> ? K : never;
 
 const buttons: Record<ElementName, Button> = {} as Record<ElementName, Button>;
 
@@ -57,14 +62,21 @@ const colors: Partial<Record<ElementName, number>> = {
 let lastClickedType: "number" | "action" | "result" = "action";
 const expression = new Signal("");
 
+const is = <U, K extends ElementName, T, F>(
+  id: U,
+  test: (n: unknown) => n is K,
+  ok: (n: NoInfer<K>) => T,
+  err: (n: NoInfer<U>) => F,
+): ElementName extends K ? F : T => (test(id) ? ok(id) : err(id)) as never;
+
 let i = 0;
 for (const elementName of layout.elementNameToIndex.keys()) {
-  const rectangle = layout.element(elementName as ElementName);
-
+  const rectangle = layout.element(elementName);
   i++;
 
   const color = colors[elementName] ?? (i % 2 === 0 ? 0x323232 : 0x373737);
 
+  const text = elementName === "screen" ? expression : elementName;
   const button = new Button({
     parent: tui,
     theme: {
@@ -75,7 +87,7 @@ for (const elementName of layout.elementNameToIndex.keys()) {
     rectangle,
     zIndex: 1,
     label: {
-      text: elementName === "screen" ? expression : elementName,
+      text,
       align: {
         vertical: "center",
         horizontal: elementName === "screen" ? "left" : "center",
@@ -94,7 +106,7 @@ for (const elementName of layout.elementNameToIndex.keys()) {
     case "=":
       button.state.when("active", () => {
         if (lastClickedType === "number") {
-          const calc = new Function("", `return ${expression.peek()};`);
+          const calc = new Function("", `return (${expression.peek()});`);
           expression.value = calc().toString();
           lastClickedType = "result";
         }
@@ -109,7 +121,10 @@ for (const elementName of layout.elementNameToIndex.keys()) {
       button.state.when("active", () => {
         const currentType = /\d/.test(elementName) ? "number" : "action";
 
-        if (currentType !== "action" || (lastClickedType === "number" && currentType === "action")) {
+        if (
+          currentType !== "action" ||
+          (lastClickedType === "number" && currentType === "action")
+        ) {
           expression.value += elementName;
           lastClickedType = currentType;
         }

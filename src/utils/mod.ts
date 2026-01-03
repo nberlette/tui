@@ -5,4 +5,4 @@ export * from "./numbers.ts";
 export * from "./sorted_array.ts";
 export * from "./strings.ts";
 export * from "./component.ts";
-export * from "./signals.ts";
+export * from "../signals/signalify.ts";

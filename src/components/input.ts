@@ -1,14 +1,14 @@
 // Copyright 2023 Im-Beast. MIT license.
 import { Box } from "./box.ts";
 
-import { Theme } from "../theme.ts";
-import { DeepPartial } from "../types.ts";
-import { ComponentOptions } from "../component.ts";
+import type { Theme } from "../theme.ts";
+import type { DeepPartial } from "../types.ts";
+import type { ComponentOptions } from "../component.ts";
 
-import { Computed, Signal, SignalOfObject } from "../signals/mod.ts";
+import { Computed, Signal, type SignalOfObject } from "../signals/mod.ts";
 
-import { BoxObject } from "../canvas/box.ts";
-import { TextObject, TextRectangle } from "../canvas/text.ts";
+import type { BoxObject } from "../canvas/box.ts";
+import { TextObject, type TextRectangle } from "../canvas/text.ts";
 
 import { clamp } from "../utils/numbers.ts";
 import { signalify } from "../utils/signals.ts";
@@ -126,7 +126,9 @@ export class Input extends Box {
     this.validator = signalify(options.validator);
     this.placeholder = signalify(options.placeholder);
     this.password = signalify(options.password ?? false);
-    this.multiCodePointSupport = signalify(options.multiCodePointSupport ?? false);
+    this.multiCodePointSupport = signalify(
+      options.multiCodePointSupport ?? false,
+    );
 
     this.on("keyPress", ({ key, ctrl, meta }) => {
       if (ctrl || meta) return;
@@ -139,17 +141,31 @@ export class Input extends Box {
       switch (key) {
         case "backspace":
           if (cursorPosition === 0) return;
-          this.text.value = value.slice(0, cursorPosition - 1) + value.slice(cursorPosition);
-          this.cursorPosition.value = clamp(cursorPosition - 1, 0, value.length);
+          this.text.value = value.slice(0, cursorPosition - 1) +
+            value.slice(cursorPosition);
+          this.cursorPosition.value = clamp(
+            cursorPosition - 1,
+            0,
+            value.length,
+          );
           return;
         case "delete":
-          this.text.value = value.slice(0, cursorPosition) + value.slice(cursorPosition + 1);
+          this.text.value = value.slice(0, cursorPosition) +
+            value.slice(cursorPosition + 1);
           return;
         case "left":
-          this.cursorPosition.value = clamp(cursorPosition - 1, 0, value.length);
+          this.cursorPosition.value = clamp(
+            cursorPosition - 1,
+            0,
+            value.length,
+          );
           return;
         case "right":
-          this.cursorPosition.value = clamp(cursorPosition + 1, 0, value.length);
+          this.cursorPosition.value = clamp(
+            cursorPosition + 1,
+            0,
+            value.length,
+          );
           return;
         case "home":
           this.cursorPosition.value = 0;
@@ -170,7 +186,11 @@ export class Input extends Box {
 
       if (validator && !validator.test(character)) return;
       this.text.value = insertAt(value, cursorPosition, character);
-      this.cursorPosition.value = clamp(cursorPosition + 1, 0, this.text.value.length);
+      this.cursorPosition.value = clamp(
+        cursorPosition + 1,
+        0,
+        this.text.value.length,
+      );
     });
   }
 
@@ -186,7 +206,9 @@ export class Input extends Box {
       zIndex: this.zIndex,
       multiCodePointSupport: this.multiCodePointSupport,
       style: new Computed(() =>
-        this.theme[!this.text.value && this.placeholder ? "placeholder" : "value"][this.state.value]
+        this.theme[
+          !this.text.value && this.placeholder ? "placeholder" : "value"
+        ][this.state.value]
       ),
       value: new Computed(() => {
         const password = this.password.value;
@@ -202,7 +224,10 @@ export class Input extends Box {
         const offsetX = cursorPosition - width + 1;
         return password
           ? "*".repeat(Math.min(value.length, width))
-          : cropToWidth(offsetX > 0 ? value.slice(offsetX, cursorPosition) : value, width);
+          : cropToWidth(
+            offsetX > 0 ? value.slice(offsetX, cursorPosition) : value,
+            width,
+          );
       }),
       rectangle: new Computed(() => {
         const { row, column } = this.rectangle.value;
@@ -222,7 +247,9 @@ export class Input extends Box {
         const value = this.text.value;
         const placeholder = this.placeholder.value;
         const cursorPosition = this.cursorPosition.value;
-        return (value ? value[cursorPosition] : placeholder?.[cursorPosition]) ?? " ";
+        return (value
+          ? value[cursorPosition]
+          : placeholder?.[cursorPosition]) ?? " ";
       }),
       style: new Computed(() => this.theme.cursor[this.state.value]),
       rectangle: new Computed(() => {
@@ -244,7 +271,8 @@ export class Input extends Box {
   interact(method: "keyboard" | "mouse"): void {
     const interactionInterval = Date.now() - this.lastInteraction.time;
 
-    this.state.value = this.state.peek() === "focused" && (interactionInterval < 500 || method === "keyboard")
+    this.state.value = this.state.peek() === "focused" &&
+        (interactionInterval < 500 || method === "keyboard")
       ? "active"
       : "focused";
 

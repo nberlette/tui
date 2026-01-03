@@ -1,16 +1,16 @@
 // Copyright 2023 Im-Beast. MIT license.
 import { Box } from "./box.ts";
-import { ComponentOptions } from "../component.ts";
+import type { ComponentOptions } from "../component.ts";
 
-import { BoxObject } from "../canvas/box.ts";
-import { TextObject, TextRectangle } from "../canvas/text.ts";
-import { Theme } from "../theme.ts";
-import { DeepPartial } from "../types.ts";
+import type { BoxObject } from "../canvas/box.ts";
+import { TextObject, type TextRectangle } from "../canvas/text.ts";
+import type { Theme } from "../theme.ts";
+import type { DeepPartial } from "../types.ts";
 import { cropToWidth, insertAt } from "../utils/strings.ts";
 import { clamp } from "../utils/numbers.ts";
 import { Computed, Effect, Signal } from "../signals/mod.ts";
 import { signalify } from "../utils/signals.ts";
-import { KeyPressEvent } from "../input_reader/types.ts";
+import type { KeyPressEvent } from "../input_reader/types.ts";
 
 export interface CursorPosition {
   x: number;
@@ -113,7 +113,9 @@ export class TextBox extends Box {
     this.text = signalify(options.text ?? "");
     this.lineNumbering = signalify(options.lineNumbering ?? false);
     this.lineHighlighting = signalify(options.lineHighlighting ?? false);
-    this.multiCodePointSupport = signalify(options.multiCodePointSupport ?? false);
+    this.multiCodePointSupport = signalify(
+      options.multiCodePointSupport ?? false,
+    );
 
     // FIXME: This creates unnecessary arrays each time it runs
     this.#textLines = new Computed(() => this.text.value.split("\n"));
@@ -163,14 +165,24 @@ export class TextBox extends Box {
               --cursorPosition.y;
               cursorPosition.x = textLines[cursorPosition.y].length;
             } else {
-              textLines[cursorPosition.y] = textLine.slice(0, cursorPosition.x - 1) + textLine.slice(cursorPosition.x);
-              cursorPosition.x = clamp(cursorPosition.x - 1, 0, textLine.length);
+              textLines[cursorPosition.y] =
+                textLine.slice(0, cursorPosition.x - 1) +
+                textLine.slice(cursorPosition.x);
+              cursorPosition.x = clamp(
+                cursorPosition.x - 1,
+                0,
+                textLine.length,
+              );
             }
             break;
           case "delete":
-            textLines[cursorPosition.y] = textLine.slice(0, cursorPosition.x) + textLine.slice(cursorPosition.x + 1);
+            textLines[cursorPosition.y] = textLine.slice(0, cursorPosition.x) +
+              textLine.slice(cursorPosition.x + 1);
 
-            if (cursorPosition.x === textLine.length && textLines.length - 1 > cursorPosition.y) {
+            if (
+              cursorPosition.x === textLine.length &&
+              textLines.length - 1 > cursorPosition.y
+            ) {
               textLines[cursorPosition.y] += textLines[cursorPosition.y + 1];
               textLines.splice(cursorPosition.y + 1, 1);
             }
@@ -191,10 +203,18 @@ export class TextBox extends Box {
         }
 
         cursorPosition.y = clamp(cursorPosition.y, 0, textLines.length);
-        cursorPosition.x = clamp(cursorPosition.x, 0, textLines[cursorPosition.y]?.length ?? 0);
+        cursorPosition.x = clamp(
+          cursorPosition.x,
+          0,
+          textLines[cursorPosition.y]?.length ?? 0,
+        );
 
         if (character!) {
-          textLines[cursorPosition.y] = insertAt(textLine, cursorPosition.x, character);
+          textLines[cursorPosition.y] = insertAt(
+            textLine,
+            cursorPosition.x,
+            character,
+          );
           ++cursorPosition.x;
         }
 
@@ -233,10 +253,13 @@ export class TextBox extends Box {
         cursorRectangle.row = row + Math.min(cursorPosition.y, height - 1);
 
         if (this.lineNumbering.value) {
-          const lineNumbersWidth = this.drawnObjects.lineNumbers[0].rectangle.peek().width;
-          cursorRectangle.column = column + lineNumbersWidth + Math.min(cursorPosition.x, width - lineNumbersWidth - 1);
+          const lineNumbersWidth =
+            this.drawnObjects.lineNumbers[0].rectangle.peek().width;
+          cursorRectangle.column = column + lineNumbersWidth +
+            Math.min(cursorPosition.x, width - lineNumbersWidth - 1);
         } else {
-          cursorRectangle.column = column + Math.min(cursorPosition.x, width - 1);
+          cursorRectangle.column = column +
+            Math.min(cursorPosition.x, width - 1);
         }
 
         return cursorRectangle;
@@ -265,7 +288,11 @@ export class TextBox extends Box {
     for (let offset = 0; offset < Math.max(height, elements); ++offset) {
       const lineNumber = lineNumbers[offset];
       if (!lineNumber && lineNumbering) {
-        const lineNumberRectangle: TextRectangle = { column: 0, row: 0, width: 0 };
+        const lineNumberRectangle: TextRectangle = {
+          column: 0,
+          row: 0,
+          width: 0,
+        };
         const lineNumber = new TextObject({
           canvas,
           view: this.view,
@@ -276,7 +303,8 @@ export class TextBox extends Box {
             const { height } = this.rectangle.value;
             const cursorPosition = this.cursorPosition.value;
 
-            const lineNumber = offset + Math.max(cursorPosition.y - height + 1, 0) + 1;
+            const lineNumber = offset +
+              Math.max(cursorPosition.y - height + 1, 0) + 1;
             const maxLineNumber = this.#textLines.value.length;
 
             return `${lineNumber}`.padEnd(`${maxLineNumber}`.length, " ");
@@ -312,7 +340,10 @@ export class TextBox extends Box {
             const highlightLine = this.lineHighlighting.value;
             const cursorPosition = this.cursorPosition.value;
 
-            const offsetY = Math.max(cursorPosition.y - this.rectangle.value.height + 1, 0);
+            const offsetY = Math.max(
+              cursorPosition.y - this.rectangle.value.height + 1,
+              0,
+            );
             const currentLine = offsetY + offset;
 
             if (highlightLine && cursorPosition.y === currentLine) {
@@ -324,16 +355,21 @@ export class TextBox extends Box {
 
             let { width, height } = this.rectangle.value;
             if (this.lineNumbering.value) {
-              const lineNumbersWidth = this.drawnObjects.lineNumbers[0].rectangle.peek().width;
+              const lineNumbersWidth =
+                this.drawnObjects.lineNumbers[0].rectangle.peek().width;
               width -= lineNumbersWidth;
             }
 
             const offsetX = cursorPosition.x - width + 1;
             const offsetY = Math.max(cursorPosition.y - height + 1, 0);
 
-            const value = this.#textLines.value[offset + offsetY]?.replace("\t", " ") ?? "";
+            const value =
+              this.#textLines.value[offset + offsetY]?.replace("\t", " ") ?? "";
 
-            return cropToWidth(offsetX > 0 ? value.slice(offsetX, cursorPosition.x) : value, width).padEnd(width, " ");
+            return cropToWidth(
+              offsetX > 0 ? value.slice(offsetX, cursorPosition.x) : value,
+              width,
+            ).padEnd(width, " ");
           }),
           rectangle: new Computed(() => {
             // associate computed with this.lineNumbering and this.#textLines
@@ -345,7 +381,8 @@ export class TextBox extends Box {
             lineRectangle.row = row + offset;
 
             if (this.lineNumbering.value) {
-              const lineNumbersWidth = this.drawnObjects.lineNumbers[0].rectangle.peek().width;
+              const lineNumbersWidth =
+                this.drawnObjects.lineNumbers[0].rectangle.peek().width;
               lineRectangle.column += lineNumbersWidth;
             }
 

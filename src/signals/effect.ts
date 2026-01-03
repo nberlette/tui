@@ -1,5 +1,8 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { optimizeDependencies, trackDependencies } from "./dependency_tracking.ts";
+import {
+  optimizeDependencies,
+  trackDependencies,
+} from "./dependency_tracking.ts";
 import type { Dependant, Dependency } from "./types.ts";
 
 /** Function that's ran every time `Effect.update` is called */
@@ -26,11 +29,12 @@ export interface Effectable {
  * // printed: "Your name is Brian"
  * ```
  */
-export class Effect implements Dependant {
+export class Effect implements Dependant, Disposable {
   protected $effectable: Effectable;
 
   dependencies: Set<Dependency>;
-  paused: boolean;
+  paused: boolean = false;
+  disposed: boolean = false;
 
   constructor(effectable: Effectable) {
     this.$effectable = effectable;
@@ -68,11 +72,15 @@ export class Effect implements Dependant {
    * - Clears dependencies
    */
   dispose(): void {
-    const { dependencies } = this;
-    for (const dependency of dependencies) {
-      dependency.dependants!.delete(this);
+    if (this.disposed) {
+      throw new ReferenceError("Effect already disposed");
+    } else {
+      for (const { dependants } of this.dependencies) {
+        dependants?.delete(this);
+      }
+      this.dependencies.clear();
+      this.disposed = true;
     }
-    dependencies.clear();
   }
 
   /**
@@ -96,5 +104,9 @@ export class Effect implements Dependant {
     for (const dependency of this.dependencies) {
       dependency.depend(this);
     }
+  }
+
+  [Symbol.dispose](): void {
+    this.dispose();
   }
 }

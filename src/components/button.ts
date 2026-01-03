@@ -1,11 +1,11 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { ComponentOptions } from "../component.ts";
+import type { ComponentOptions } from "../component.ts";
 import { Box } from "./box.ts";
 
 import type { BoxObject } from "../canvas/box.ts";
-import { Label, LabelAlign, LabelRectangle } from "./label.ts";
-import { Signal, SignalOfObject } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import { Label, type LabelAlign, type LabelRectangle } from "./label.ts";
+import type { Signal, SignalOfObject } from "../signals/mod.ts";
+import { signalify } from "../signals/signalify.ts";
 
 const centerAlign: LabelAlign = {
   horizontal: "center",
@@ -68,15 +68,16 @@ export class Button extends Box {
     });
   }
 
-  draw(): void {
+  override draw(): void {
     super.draw();
     this.#updateLabelSubcomponent();
   }
 
-  interact(method: "mouse" | "keyboard"): void {
+  override interact(method: "mouse" | "keyboard"): void {
     const interactionInterval = Date.now() - this.lastInteraction.time;
 
-    this.state.value = this.state.peek() === "focused" && (interactionInterval < 500 || method === "keyboard")
+    this.state.value = this.state.peek() === "focused" &&
+        (interactionInterval < 500 || method === "keyboard")
       ? "active"
       : "focused";
 

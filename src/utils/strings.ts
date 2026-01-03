@@ -29,7 +29,9 @@ export function getMultiCodePointCharacters(text: string): string[] {
       } else if (ansi) {
         lastStyle += char;
 
-        if (ansi === 3 && char === "m" && lastStyle[lastStyle.length - 2] === "0") {
+        if (
+          ansi === 3 && char === "m" && lastStyle[lastStyle.length - 2] === "0"
+        ) {
           lastStyle = "";
         }
 

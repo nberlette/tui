@@ -1,18 +1,24 @@
 // Copyright 2023 Im-Beast. MIT license.
 import { Signal } from "../signals/signal.ts";
-import { signalify } from "../utils/signals.ts";
+import { signalify } from "../signals/signalify.ts";
 
-import { LayoutInvalidElementsPatternError, LayoutMissingElementError } from "./errors.ts";
+import {
+  LayoutInvalidElementsPatternError,
+  LayoutMissingElementError,
+} from "./errors.ts";
 
 import type { Rectangle } from "../types.ts";
-import type { Layout, LayoutElement, LayoutOptions } from "./types.ts";
+import { Layout, type LayoutElement, type LayoutOptions } from "./layout.ts";
 import { Effect } from "../signals/effect.ts";
+import { nextTick } from "node:process";
 
-export interface GridLayoutOptions<T extends string> extends Omit<LayoutOptions<T>, "pattern"> {
+export interface GridLayoutOptions<T extends string>
+  extends Omit<LayoutOptions<T>, "pattern"> {
   pattern: T[][] | Signal<T[][]>;
 }
 
-export interface GridLayoutElement<T extends string> extends Omit<LayoutElement<T>, "unitLength"> {
+export interface GridLayoutElement<T extends string>
+  extends Omit<LayoutElement<T>, "unitLength"> {
   unitLengthX: number;
   unitLengthY: number;
   startX: number;
@@ -64,7 +70,7 @@ export interface GridLayoutElement<T extends string> extends Omit<LayoutElement<
  * });
  * ```
  */
-export class GridLayout<T extends string> implements Layout<T> {
+export class GridLayout<T extends string> extends Layout<T> {
   rectangle: Signal<Rectangle>;
 
   gapX: Signal<number>;
@@ -77,6 +83,7 @@ export class GridLayout<T extends string> implements Layout<T> {
   elementNameToIndex: Map<T, number>;
 
   constructor(options: GridLayoutOptions<T>) {
+    super();
     this.totalUnitLengthX = 0;
     this.totalUnitLengthY = 0;
     this.elements = [];
@@ -86,6 +93,7 @@ export class GridLayout<T extends string> implements Layout<T> {
       deepObserve: true,
       watchObjectIndex: true,
     });
+
     new Effect(() => this.updatePattern());
 
     this.gapX = signalify(options.gapX ?? 0);
@@ -130,7 +138,10 @@ export class GridLayout<T extends string> implements Layout<T> {
               unitLengthX: 0,
               unitLengthY: 0,
               accumulatedX: 0,
-              rectangle: new Signal({ column: 0, height: 0, row: 0, width: 0 }, { deepObserve: true }),
+              rectangle: new Signal(
+                { column: 0, height: 0, row: 0, width: 0 },
+                { deepObserve: true },
+              ),
             };
           }
 
@@ -158,7 +169,8 @@ export class GridLayout<T extends string> implements Layout<T> {
   }
 
   updateElements(): void {
-    const { elements, totalUnitLengthX, totalUnitLengthY, elementNameToIndex } = this;
+    const { elements, totalUnitLengthX, totalUnitLengthY, elementNameToIndex } =
+      this;
 
     const { column, row, width, height } = this.rectangle.value;
     const pattern = this.pattern.value;
@@ -195,7 +207,8 @@ export class GridLayout<T extends string> implements Layout<T> {
         elementsByRow[++currentRow] = [];
         const rowElementNames = pattern[lastElement.startY];
         const lastRowElementName = rowElementNames[rowElementNames.length - 1];
-        const lastRowElement = elements[elementNameToIndex.get(lastRowElementName)!];
+        const lastRowElement =
+          elements[elementNameToIndex.get(lastRowElementName)!];
 
         if (rowElementNames[0] === lastRowElementName) {
           // Element takes whole row
@@ -203,7 +216,8 @@ export class GridLayout<T extends string> implements Layout<T> {
         } else if (lastRowElement.startX === lastElement.startX) {
           // Element appears for the first time
           const rectangle = lastRowElement.rectangle.peek();
-          rectangle.width -= (rectangle.column + rectangle.width - width) + gapX;
+          rectangle.width -= (rectangle.column + rectangle.width - width) +
+            gapX;
         }
 
         widthDiff = width;
@@ -228,8 +242,10 @@ export class GridLayout<T extends string> implements Layout<T> {
       // Actually only fixing width of element that is in the most bottom-right corner is neccessary, because other elements widths adjusted before
       // This can probably be cleaner though.
       const lastRowElementNames = pattern[lastElement.startY];
-      const bottomRightElementName = lastRowElementNames[lastRowElementNames.length - 1];
-      const bottomRightElement = elements[elementNameToIndex.get(bottomRightElementName)!];
+      const bottomRightElementName =
+        lastRowElementNames[lastRowElementNames.length - 1];
+      const bottomRightElement =
+        elements[elementNameToIndex.get(bottomRightElementName)!];
       const bottomRightRectangle = bottomRightElement.rectangle.peek();
 
       if (lastRowElementNames[0] === bottomRightElementName) {
@@ -244,7 +260,8 @@ export class GridLayout<T extends string> implements Layout<T> {
       // Adjust height of elements so that they are fit to rectangle's size
       // while keeping proper proportions
       let diff = heightDiff - gapY;
-      const piece = (diff < 0 ? 1 : -1) * Math.ceil(Math.abs(diff) / elementsByRow.length);
+      const piece = (diff < 0 ? 1 : -1) *
+        Math.ceil(Math.abs(diff) / elementsByRow.length);
       const amount = Math.abs(diff / piece);
       for (let i = 1; i <= amount; ++i) {
         const rowElements = elementsByRow[elementsByRow.length - i];
@@ -264,7 +281,8 @@ export class GridLayout<T extends string> implements Layout<T> {
 
       for (const element of lastRowElements) {
         const rectangle = element.rectangle.peek();
-        rectangle.height += (row + height) - (rectangle.row + rectangle.height) - gapY;
+        rectangle.height += (row + height) -
+          (rectangle.row + rectangle.height) - gapY;
       }
     }
   }

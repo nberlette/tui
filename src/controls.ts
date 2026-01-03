@@ -1,8 +1,11 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { Component } from "./component.ts";
-import { Tui } from "./tui.ts";
+import type { Component } from "./component.ts";
+import type { Tui } from "./tui.ts";
 import { DISABLE_MOUSE, ENABLE_MOUSE } from "./utils/ansi_codes.ts";
-import { getComponentClosestToTopLeftCorner, isInteractable } from "./utils/component.ts";
+import {
+  getComponentClosestToTopLeftCorner,
+  isInteractable,
+} from "./utils/component.ts";
 import { fitsInRectangle } from "./utils/numbers.ts";
 
 const textEncoder = new TextEncoder();
@@ -81,7 +84,8 @@ export function handleKeyboardControls(tui: Tui): void {
 
       if (
         !bestCandidateDistance || distance < bestCandidateDistance ||
-        (bestCandidate && distance <= bestCandidateDistance && component.zIndex > bestCandidate.zIndex)
+        (bestCandidate && distance <= bestCandidateDistance &&
+          component.zIndex > bestCandidate.zIndex)
       ) {
         bestCandidate = component;
         bestCandidateDistance = distance;

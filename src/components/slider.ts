@@ -1,15 +1,13 @@
 // Copyright 2023 Im-Beast. MIT license.
+
 import { Box } from "./box.ts";
-import { Theme } from "../theme.ts";
-import { ComponentOptions } from "../component.ts";
-
 import { BoxObject } from "../canvas/box.ts";
-
+import { Computed, type Signal } from "../signals/mod.ts";
 import { clamp, normalize } from "../utils/numbers.ts";
-
-import type { DeepPartial } from "../types.ts";
-import { Computed, Signal } from "../signals/mod.ts";
 import { signalify } from "../utils/signals.ts";
+import type { ComponentOptions } from "../component.ts";
+import type { Theme } from "../theme.ts";
+import type { DeepPartial } from "../types.ts";
 
 export type SliderOrientation = "vertical" | "horizontal";
 
@@ -25,9 +23,9 @@ export interface SliderOptions extends ComponentOptions {
   /**
    * When false thumb will be 1 cell wide/high.
    *
-   * If this is set to true, thumb size will adjust so it takes as much space as it can so it looks more natural to interact with.
-   *
-   * Basically when set to true it'll make slider thumb work just like in browsers.
+   * If this is set to true, thumb size will adjust so it takes as much space
+   * as it can so it looks more natural to interact with, similar to native
+   * scrollbar thumbs like those in a web browser.
    */
   adjustThumbSize: boolean | Signal<boolean>;
   orientation: SliderOrientation | Signal<SliderOrientation>;
@@ -74,11 +72,11 @@ export class Slider extends Box {
 
   constructor(options: SliderOptions) {
     super(options);
-    this.min = signalify(options.min);
-    this.max = signalify(options.max);
-    this.step = signalify(options.step);
+    this.min = signalify(options.min ?? 0);
+    this.max = signalify(options.max ?? 100);
+    this.step = signalify(options.step ?? 1);
     this.value = signalify(options.value ?? 0);
-    this.orientation = signalify(options.orientation);
+    this.orientation = signalify(options.orientation ?? "horizontal");
     this.adjustThumbSize = signalify(options.adjustThumbSize ?? false);
 
     this.on("keyPress", ({ key, ctrl, shift, meta }) => {
@@ -101,33 +99,45 @@ export class Slider extends Box {
       }
     });
 
-    this.on("mousePress", ({ drag, movementX, movementY, ctrl, shift, meta }) => {
-      if (!drag || ctrl || shift || meta) return;
+    this.on(
+      "mousePress",
+      ({ drag, movementX, movementY, ctrl, shift, meta }) => {
+        if (!drag || ctrl || shift || meta) return;
 
-      const { min, max, step, value, orientation } = this;
+        const { min, max, step, value, orientation } = this;
 
-      value.value = clamp(
-        value.peek() + (orientation.peek() === "horizontal" ? movementX : movementY) * step.peek(),
-        min.peek(),
-        max.peek(),
-      );
-    });
+        value.value = clamp(
+          value.peek() +
+            (orientation.peek() === "horizontal" ? movementX : movementY) *
+              step.peek(),
+          min.peek(),
+          max.peek(),
+        );
+      },
+    );
 
     this.on("mouseScroll", ({ scroll }) => {
       const { min, max, step, value } = this;
 
-      this.value.value = clamp(value.peek() + scroll * step.peek(), min.peek(), max.peek());
+      this.value.value = clamp(
+        value.peek() + scroll * step.peek(),
+        min.peek(),
+        max.peek(),
+      );
     });
   }
 
-  draw(): void {
+  override draw(): void {
     super.draw();
 
     const thumbRectangle = { column: 0, row: 0, width: 0, height: 0 };
+    const { view, zIndex, tui } = this;
+    const { canvas } = tui;
+
     const thumb = new BoxObject({
-      view: this.view,
-      zIndex: this.zIndex,
-      canvas: this.tui.canvas,
+      view,
+      zIndex,
+      canvas,
       style: new Computed(() => this.theme.thumb[this.state.value]),
       rectangle: new Computed(() => {
         const value = this.value.value;
@@ -139,7 +149,9 @@ export class Slider extends Box {
         const normalizedValue = normalize(value, min, max);
 
         if (horizontal) {
-          const thumbSize = this.adjustThumbSize.value ? Math.round(width / (max - min)) : 1;
+          const thumbSize = this.adjustThumbSize.value
+            ? Math.round(width / (max - min))
+            : 1;
 
           thumbRectangle.column = Math.min(
             column + width - thumbSize,
@@ -149,7 +161,9 @@ export class Slider extends Box {
           thumbRectangle.width = thumbSize;
           thumbRectangle.height = height;
         } else {
-          const thumbSize = this.adjustThumbSize.value ? Math.round(height / (max - min)) : 1;
+          const thumbSize = this.adjustThumbSize.value
+            ? Math.round(height / (max - min))
+            : 1;
 
           thumbRectangle.column = column;
           thumbRectangle.row = Math.min(
@@ -168,11 +182,12 @@ export class Slider extends Box {
     thumb.draw();
   }
 
-  interact(method: "keyboard" | "mouse"): void {
+  override interact(method: "keyboard" | "mouse"): void {
     super.interact(method);
     const interactionInterval = Date.now() - this.lastInteraction.time;
 
-    this.state.value = this.state.peek() === "focused" && (interactionInterval < 500 || method === "keyboard")
+    this.state.value = this.state.peek() === "focused" &&
+        (interactionInterval < 500 || method === "keyboard")
       ? "active"
       : "focused";
   }

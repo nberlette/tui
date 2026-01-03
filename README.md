@@ -5,7 +5,8 @@
 [![Deno](https://github.com/Im-Beast/deno_tui/actions/workflows/deno.yml/badge.svg)](https://github.com/Im-Beast/deno_tui/actions/workflows/deno.yml)
 [![Deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https://deno.land/x/tui/mod.ts)
 
-Simple [Deno](https://github.com/denoland/deno/) module that allows easy creation of
+Simple [Deno](https://github.com/denoland/deno/) module that allows easy
+creation of
 [Terminal User Interfaces](https://en.wikipedia.org/wiki/Text-based_user_interface).
 
 ### 🔩 Features
@@ -17,20 +18,21 @@ Simple [Deno](https://github.com/denoland/deno/) module that allows easy creatio
 - [📦 Multiple ready-to-use components](./src/components/)
 - 🎨 Styling framework agnostic
   - This means you can use whatever terminal styling module you want
-  - [🖍️ Crayon](https://github.com/crayon-js/crayon) is recommended _but not imposed_ as it greatly integrates with Tui
+  - [🖍️ Crayon](https://github.com/crayon-js/crayon) is recommended _but not
+    imposed_ as it greatly integrates with Tui
 - 🪶 Relatively lightweight
 
 ## 🖥️ OS Support
 
 | Operating system     | Linux | macOS | Windows¹ | WSL  |
 | -------------------- | ----- | ----- | -------- | ---- |
-| Base                 | ✔️     | ✔️     | ✔️        | ✔️    |
-| Keyboard support     | ✔️     | ✔️     | ✔️        | ✔️    |
-| Mouse support        | ✔️     | ✔️     | ✔️        | ✔️    |
+| Base                 | ✔️    | ✔️    | ✔️       | ✔️   |
+| Keyboard support     | ✔️    | ✔️    | ✔️       | ✔️   |
+| Mouse support        | ✔️    | ✔️    | ✔️       | ✔️   |
 | Required permissions | none  | none  | none     | none |
 
-¹ - If unicode characters are displayed incorrectly type `chcp 65001` into the console to change active console code
-page to use UTF-8 encoding.
+¹ - If unicode characters are displayed incorrectly type `chcp 65001` into the
+console to change active console code page to use UTF-8 encoding.
 
 ## 🎓 Get started
 
@@ -119,11 +121,14 @@ tui.run();
 ## 🤝 Contributing
 
 **Tui** is open for any contributions.
-<br /> If you feel like you can enhance this project - please open an issue and/or pull request.
+<br /> If you feel like you can enhance this project - please open an issue
+and/or pull request.
 <br /> Code should be well document and easy to follow what's going on.
 
-This project follows [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) spec.
-<br /> If your pull request's code can be hard to understand, please add comments to it.
+This project follows
+[conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) spec.
+<br /> If your pull request's code can be hard to understand, please add
+comments to it.
 
 ## 📝 Licensing
 
