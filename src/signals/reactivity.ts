@@ -12,7 +12,8 @@ export const ORIGINAL_REF: unique symbol = Symbol("original_ref");
 export const CONNECTED_SIGNAL: unique symbol = Symbol("connected_signal");
 
 export function isReactive<T>(input: T): input is Reactive<T> {
-  return input instanceof Object && IS_REACTIVE in input;
+  return ((typeof input === "object" && input !== null) ||
+    typeof input === "function") && IS_REACTIVE in input;
 }
 
 export function getConnectedSignal<T extends object>(

@@ -215,7 +215,7 @@ export class Signal<T> implements Dependency {
     return this.$value;
   }
 
-  set value(value) {
+  set value(value: T) {
     activeSignals?.add(this);
 
     if (this.$value !== (this.$value = value) || this.forceUpdateValue) {
