@@ -9,8 +9,12 @@ import { TextObject } from "../canvas/text.ts";
 import { normalize } from "../utils/numbers.ts";
 
 import type { DeepPartial } from "../types.ts";
-import { Computed, type Signal, type SignalOfObject } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import {
+  Computed,
+  type Signal,
+  signalify,
+  type SignalOfObject,
+} from "../signals/mod.ts";
 
 export type ProgressBarCharMapType = {
   vertical: string[];
@@ -42,68 +46,67 @@ export interface ProgressBarOptions extends ComponentOptions {
 }
 
 /**
- * Component for creating interactive progressbars
+ * Component for creating interactive progress bars in the terminal.
  *
  * @example
  * ```ts
  * new ProgressBar({
- *  parent: tui,
- *  orientation: "horizontal",
- *  direction: "normal",
- *  theme: {
- *   base: crayon.bgLightBlue,
- *   focused: crayon.bgCyan,
- *   active: crayon.bgBlue,
- *   progress: {
- *    base: crayon.bgLightBlue.green,
- *    focused: crayon.bgCyan.lightGreen,
- *    active: crayon.bgBlue.lightYellow,
+ *   parent: tui,
+ *   orientation: "horizontal",
+ *   direction: "normal",
+ *   theme: {
+ *     base: crayon.bgLightBlue,
+ *     focused: crayon.bgCyan,
+ *     active: crayon.bgBlue,
+ *     progress: {
+ *       base: crayon.bgLightBlue.green,
+ *       focused: crayon.bgCyan.lightGreen,
+ *       active: crayon.bgBlue.lightYellow,
+ *     },
  *   },
- *  },
- *  value: 50,
- *  min: 0,
- *  max: 100,
- *  smooth: false,
- *  rectangle: {
- *   column: 48,
- *   height: 2,
- *   row: 3,
- *   width: 10,
- *  },
- *  zIndex: 0,
+ *   value: 50,
+ *   min: 0,
+ *   max: 100,
+ *   smooth: false,
+ *   rectangle: {
+ *     column: 48,
+ *     height: 2,
+ *     row: 3,
+ *     width: 10,
+ *   },
+ *   zIndex: 0,
  * });
  * ```
  *
- * You can make the progressbar vertical by changing `orientation`
+ * You can make the progressbar vertical by changing `orientation` to `"vertical"`.
  * @example
  * ```ts
  * new ProgressBar({
- *  ...,
- *  orientation: "vertical",
+ *   orientation: "vertical",
+ *   // ...
  * });
  * ```
  *
- * You can reverse the flow of progress by changing `direction` to "reversed"
+ * You can reverse the flow of progress by changing `direction` to `"reversed"`.
  * @example
  * ```ts
  * new ProgressBar({
- *  ...,
- *  direction: "reversed",
+ *   direction: "reversed",
+ *   // ...
  * });
  * ```
  *
- * You can also make progress seem more granular by taking advantage of special characters.
- * Set smooth to `true` to do that.
+ * You can also make progress seem more granular by setting `smooth` to `true`,
+ * taking advantage of special characters.
  * @example
  * ```ts
  * new ProgressBar({
- *  ...,
- *  smooth: true,
+ *   smooth: true,
+ *   // ...
  * });
  * ```
  */
-export class ProgressBar extends Box {
-  declare drawnObjects: { box: BoxObject; progress: BoxObject | TextObject[] };
+export class ProgressBar extends Box<{ progress: BoxObject | TextObject[] }> {
   declare theme: ProgressBarTheme;
 
   min: Signal<number>;
@@ -117,8 +120,16 @@ export class ProgressBar extends Box {
   constructor(options: ProgressBarOptions) {
     super(options);
 
-    const { min, max, value, smooth, direction, orientation, charMap } =
-      options;
+    const {
+      min = 0,
+      max = 100,
+      value = 0,
+      smooth = false,
+      direction = "normal",
+      orientation = "horizontal",
+      charMap = progressBarCharMap,
+    } = options;
+
     this.min = signalify(min);
     this.max = signalify(max);
     this.value = signalify(value);
@@ -128,7 +139,7 @@ export class ProgressBar extends Box {
     this.charMap = signalify(charMap ?? progressBarCharMap);
   }
 
-  draw(): void {
+  override draw(): void {
     super.draw();
 
     if (this.smooth.peek()) {
@@ -181,7 +192,7 @@ export class ProgressBar extends Box {
     }
   }
 
-  interact(method: "mouse" | "keyboard"): void {
+  override interact(method: "mouse" | "keyboard"): void {
     const interactionInterval = Date.now() - this.lastInteraction.time;
 
     this.state.value = this.state.peek() === "focused" &&
@@ -192,7 +203,7 @@ export class ProgressBar extends Box {
     super.interact(method);
   }
 
-  #fillSmoothDrawObjects() {
+  #fillSmoothDrawObjects = () => {
     if (!Array.isArray(this.drawnObjects.progress)) {
       throw new Error("drawnObjects.progress needs to be an array");
     }
@@ -260,9 +271,9 @@ export class ProgressBar extends Box {
       this.drawnObjects.progress.push(progressLine);
       progressLine.draw();
     }
-  }
+  };
 
-  #popUnusedSmoothDrawObjects(): void {
+  #popUnusedSmoothDrawObjects = () => {
     if (!Array.isArray(this.drawnObjects.progress)) {
       throw new Error("drawnObjects.progress needs to be an array");
     }
@@ -274,5 +285,5 @@ export class ProgressBar extends Box {
     ) {
       progressLine.erase();
     }
-  }
+  };
 }

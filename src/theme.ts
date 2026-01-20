@@ -23,11 +23,12 @@ export function hierarchizeTheme(input: Partial<Theme> = {}): Theme {
   const output = input as Theme & Record<string, Theme>;
   for (const key in output) {
     if (
-      key === "base" || key === "focused" || key === "active" ||
-      key === "disabled" || output === output[key]
-    ) {
-      continue;
-    }
+      key === "base" ||
+      key === "active" ||
+      key === "focused" ||
+      key === "disabled" ||
+      output === output[key]
+    ) continue;
     output[key] = hierarchizeTheme(output[key]);
   }
 
@@ -35,13 +36,31 @@ export function hierarchizeTheme(input: Partial<Theme> = {}): Theme {
 }
 
 /** Base theme used to style components, can be expanded upon */
-export interface Theme {
+export class Theme {
+  static empty(): Theme {
+    return new Theme();
+  }
+
+  static default(): Theme {
+    return new Theme();
+  }
+
   /** Default style */
   base: Style;
+
   /** Style when component is focused */
   focused: Style;
+
   /** Style when component is active */
   active: Style;
+
   /** Style when component is disabled */
   disabled: Style;
+
+  constructor(base?: Style, focused?: Style, active?: Style, disabled?: Style) {
+    this.base = base ?? emptyStyle;
+    this.active = active ?? emptyStyle;
+    this.focused = focused ?? emptyStyle;
+    this.disabled = disabled ?? emptyStyle;
+  }
 }

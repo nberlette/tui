@@ -2,7 +2,7 @@
 import { TextObject, type TextRectangle } from "../canvas/text.ts";
 import { Component, type ComponentOptions } from "../component.ts";
 import type { Signal, SignalOfObject } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import { signalify } from "../signals/signalify.ts";
 
 export interface TextOptions extends Omit<ComponentOptions, "rectangle"> {
   text: string | Signal<string>;
@@ -73,7 +73,7 @@ export class Text extends Component {
     );
   }
 
-  draw(): void {
+  override draw(): void {
     const text = new TextObject({
       canvas: this.tui.canvas,
       view: this.view,

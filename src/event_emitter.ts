@@ -34,11 +34,7 @@ export class EventEmitter<EventMap extends EventRecord> {
     listener: EventListener<EventMap, Type>,
     once?: boolean,
   ): () => void {
-    let listeners = this.listeners[type];
-    if (!listeners) {
-      listeners = [];
-      this.listeners[type] = listeners;
-    }
+    const listeners = this.listeners[type] ||= [];
 
     if (once) {
       const originalListener = listener;
@@ -48,8 +44,10 @@ export class EventEmitter<EventMap extends EventRecord> {
       };
     }
 
-    if (listeners.includes(listener)) return () => this.off(type, listener);
-    listeners.splice(listeners.length, 0, listener);
+    if (!listeners.includes(listener)) {
+      listeners.splice(listeners.length, 0, listener);
+    }
+
     return () => this.off(type, listener);
   }
 
@@ -59,16 +57,16 @@ export class EventEmitter<EventMap extends EventRecord> {
    *  - If just type is passed with no listener, every listener for specific type will be removed
    *  - If both type and listener is passed, just this specific listener will be removed
    */
-  off(): void;
-  off<Type extends keyof EventMap>(type: Type): void;
+  off(): this;
+  off<Type extends keyof EventMap>(type: Type): this;
   off<Type extends keyof EventMap>(
     type: Type,
     listener: EventListener<EventMap, Type>,
-  ): void;
+  ): this;
   off<Type extends keyof EventMap>(
     type?: Type,
     listener?: EventListener<EventMap, Type>,
-  ): void {
+  ): this {
     if (!type) {
       this.listeners = {};
     } else if (!listener) {
@@ -77,6 +75,7 @@ export class EventEmitter<EventMap extends EventRecord> {
       const listeners = this.listeners[type];
       listeners?.splice(listeners.indexOf(listener), 1);
     }
+    return this;
   }
 
   /** Emit specific type, after emitting all listeners associated with that event type will run with given arguments */
@@ -85,10 +84,10 @@ export class EventEmitter<EventMap extends EventRecord> {
     ...args: EventMap[Type]["args"]
   ): void {
     const listeners = this.listeners[type];
-    if (!listeners?.length) return;
-
-    for (const listener of listeners!) {
-      listener.apply(this, args);
+    if (listeners?.length) {
+      for (const listener of listeners!) {
+        listener.apply(this, args);
+      }
     }
   }
 }

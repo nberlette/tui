@@ -10,7 +10,6 @@ import {
 import type { Rectangle } from "../types.ts";
 import { Layout, type LayoutElement, type LayoutOptions } from "./layout.ts";
 import { Effect } from "../signals/effect.ts";
-import { nextTick } from "node:process";
 
 export interface GridLayoutOptions<T extends string>
   extends Omit<LayoutOptions<T>, "pattern"> {

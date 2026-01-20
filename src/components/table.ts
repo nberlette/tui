@@ -8,8 +8,7 @@ import type { DeepPartial, Rectangle } from "../types.ts";
 import type { Theme } from "../theme.ts";
 import { textWidth } from "../utils/strings.ts";
 import { clamp } from "../utils/numbers.ts";
-import { Computed, Effect, Signal } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import { Computed, Effect, Signal, signalify } from "../signals/mod.ts";
 
 export const TableUnicodeCharacters = {
   sharp: {
@@ -222,7 +221,7 @@ export class Table extends Component {
     });
   }
 
-  draw(): void {
+  override draw(): void {
     super.draw();
 
     const { canvas } = this.tui;
@@ -378,7 +377,7 @@ export class Table extends Component {
     spacer.draw();
   }
 
-  interact(method: "mouse" | "keyboard"): void {
+  override interact(method: "mouse" | "keyboard"): void {
     const interactionInterval = Date.now() - this.lastInteraction.time;
 
     this.state.value = this.state.peek() === "focused" &&

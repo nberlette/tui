@@ -47,13 +47,15 @@
     "./signals/lazy-effect": "./src/signals/lazy_effect.ts",
     "./signals/reactivity": "./src/signals/reactivity.ts",
     "./signals/signal": "./src/signals/signal.ts",
+    "./signals/signalify": "./src/signals/signalify.ts",
     "./signals/types": "./src/signals/types.ts",
     "./stdio": "./src/stdio/mod.ts",
     "./stdio/console-size": "./src/stdio/console_size.ts",
-    "./stdio/types": "./src/stdio/types.ts",
+    "./stdio/size": "./src/stdio/console_size.ts",
     "./stdio/stdin": "./src/stdio/stdin.ts",
     "./stdio/stdout": "./src/stdio/stdout.ts",
     "./stdio/stderr": "./src/stdio/stderr.ts",
+    "./stdio/types": "./src/stdio/types.ts",
     "./stdin": "./src/stdio/stdin.ts",
     "./stdout": "./src/stdio/stdout.ts",
     "./stderr": "./src/stdio/stderr.ts",
@@ -65,7 +67,6 @@
     "./utils/async": "./src/utils/async.ts",
     "./utils/component": "./src/utils/component.ts",
     "./utils/numbers": "./src/utils/numbers.ts",
-    "./utils/signals": "./src/utils/signals.ts",
     "./utils/sorted-array": "./src/utils/sorted_array.ts",
     "./utils/strings": "./src/utils/strings.ts",
     "./utils/runtime": "./src/utils/runtime.ts",
@@ -75,5 +76,8 @@
     "example:basic": "deno -Aq --watch ./examples/demo.ts",
     "example:layout": "deno -Aq --watch ./examples/layout.ts",
     "example:calculator": "deno -Aq --watch ./examples/calculator.ts"
+  },
+  "lint": {
+    "exclude": ["./examples"]
   }
 }

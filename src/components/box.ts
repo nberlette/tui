@@ -1,6 +1,8 @@
 // Copyright 2023 Im-Beast. MIT license.
+// deno-lint-ignore-file ban-types no-explicit-any
 import { BoxObject } from "../canvas/box.ts";
-import { Component } from "../component.ts";
+import { Component, type DrawnObjects } from "../component.ts";
+import type { EmitterEvent } from "@nick/tui/event-emitter";
 
 /**
  * Component for creating simple non-interactive box
@@ -22,9 +24,15 @@ import { Component } from "../component.ts";
  * });
  * ```
  */
-export class Box extends Component {
-  declare drawnObjects: { box: BoxObject };
-
+export class Box<
+  TDrawnObjects extends DrawnObjects = {},
+  TSubComponents extends Record<string, Component> = Record<string, Component>,
+  TEventsRecord extends Record<string, EmitterEvent<any[]>> = {},
+> extends Component<
+  TDrawnObjects & { box: BoxObject },
+  TSubComponents,
+  TEventsRecord
+> {
   override draw(): void {
     super.draw();
 

@@ -11,7 +11,7 @@ import type { BoxObject } from "../canvas/box.ts";
 import { TextObject, type TextRectangle } from "../canvas/text.ts";
 
 import { clamp } from "../utils/numbers.ts";
-import { signalify } from "../utils/signals.ts";
+import { signalify } from "../signals/mod.ts";
 import { cropToWidth, insertAt } from "../utils/strings.ts";
 
 export interface InputTheme extends Theme {
@@ -194,7 +194,7 @@ export class Input extends Box {
     });
   }
 
-  draw(): void {
+  override draw(): void {
     super.draw();
 
     const { canvas } = this.tui;
@@ -268,7 +268,7 @@ export class Input extends Box {
     cursor.draw();
   }
 
-  interact(method: "keyboard" | "mouse"): void {
+  override interact(method: "keyboard" | "mouse"): void {
     const interactionInterval = Date.now() - this.lastInteraction.time;
 
     this.state.value = this.state.peek() === "focused" &&

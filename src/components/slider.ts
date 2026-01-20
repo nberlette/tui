@@ -2,9 +2,8 @@
 
 import { Box } from "./box.ts";
 import { BoxObject } from "../canvas/box.ts";
-import { Computed, type Signal } from "../signals/mod.ts";
+import { Computed, type Signal, signalify } from "../signals/mod.ts";
 import { clamp, normalize } from "../utils/numbers.ts";
-import { signalify } from "../utils/signals.ts";
 import type { ComponentOptions } from "../component.ts";
 import type { Theme } from "../theme.ts";
 import type { DeepPartial } from "../types.ts";

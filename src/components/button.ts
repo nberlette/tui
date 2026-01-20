@@ -1,7 +1,7 @@
 // Copyright 2023 Im-Beast. MIT license.
-import type { ComponentOptions } from "../component.ts";
+// deno-lint-ignore-file ban-types
+import type { Component, ComponentOptions } from "../component.ts";
 import { Box } from "./box.ts";
-
 import type { BoxObject } from "../canvas/box.ts";
 import { Label, type LabelAlign, type LabelRectangle } from "./label.ts";
 import type { Signal, SignalOfObject } from "../signals/mod.ts";
@@ -19,8 +19,13 @@ export interface ButtonOptions extends ComponentOptions {
   };
 }
 
+export interface ButtonLabel {
+  text: Signal<string>;
+  align: Signal<LabelAlign>;
+}
+
 /**
- * Component for creating interactive button
+ * Component for creating interactive buttons in the terminal.
  *
  * @example
  * ```ts
@@ -42,30 +47,24 @@ export interface ButtonOptions extends ComponentOptions {
  * });
  * ```
  */
-export class Button extends Box {
-  declare drawnObjects: { box: BoxObject };
-  declare subComponents: { label?: Label };
-  label: {
-    text: Signal<string>;
-    align: Signal<LabelAlign>;
-  };
+export class Button<
+  TSubComponents extends Record<string, Component> = {},
+> extends Box<{ box: BoxObject }, TSubComponents & { label?: Label }> {
+  label: ButtonLabel = { text: signalify(""), align: signalify(centerAlign) };
 
   constructor(options: ButtonOptions) {
     super(options);
 
-    let { label } = options;
+    const { label } = options;
 
-    if (!label) {
-      label = { text: "", align: centerAlign };
+    if (label?.text) {
+      this.label.text = signalify(label.text);
+      if (label?.align) {
+        this.label.align = signalify(label.align);
+      }
     }
 
-    label.text = signalify(label.text);
-    label.align = signalify(label.align ?? centerAlign);
-
-    this.label = label as this["label"];
-    this.label.text.subscribe(() => {
-      this.#updateLabelSubcomponent();
-    });
+    this.label.text.subscribe(this.#updateLabelSubcomponent);
   }
 
   override draw(): void {
@@ -84,30 +83,25 @@ export class Button extends Box {
     super.interact(method);
   }
 
-  #updateLabelSubcomponent(): void {
+  #updateLabelSubcomponent = () => {
     if (!this.label.text.value) {
       this.subComponents.label?.destroy();
-      return;
+    } else if (!this.subComponents.label) {
+      const label = new Label({
+        parent: this,
+        theme: this.theme,
+        zIndex: this.zIndex,
+        rectangle: this.rectangle as Signal<LabelRectangle>,
+        overwriteRectangle: true,
+        text: this.label.text,
+        align: this.label.align,
+      });
+
+      label.state = this.state;
+      label.style = this.style;
+
+      label.subComponentOf = this;
+      this.subComponents.label = label;
     }
-
-    if (this.subComponents.label) {
-      return;
-    }
-
-    const label = new Label({
-      parent: this,
-      theme: this.theme,
-      zIndex: this.zIndex,
-      rectangle: this.rectangle as Signal<LabelRectangle>,
-      overwriteRectangle: true,
-      text: this.label.text,
-      align: this.label.align,
-    });
-
-    label.state = this.state;
-    label.style = this.style;
-
-    label.subComponentOf = this;
-    this.subComponents.label = label;
-  }
+  };
 }
