@@ -3,12 +3,6 @@
 import { crayon } from "jsr:@crayon/crayon@4.0.0-alpha.4";
 
 import { Tui } from "../src/tui.ts";
-import { handleInput } from "../src/input.ts";
-import {
-  handleKeyboardControls,
-  handleMouseControls,
-} from "../src/controls.ts";
-
 import { Box } from "../src/components/box.ts";
 import { Text } from "../src/components/text.ts";
 import { Frame } from "../src/components/frame.ts";
@@ -20,7 +14,6 @@ import { Slider } from "../src/components/slider.ts";
 import { CheckBox } from "../src/components/checkbox.ts";
 import { ComboBox } from "../src/components/combobox.ts";
 import { ProgressBar } from "../src/components/progressbar.ts";
-
 import type { Theme } from "../src/theme.ts";
 import { View } from "../src/view.ts";
 import type { Component, Rectangle } from "../mod.ts";
