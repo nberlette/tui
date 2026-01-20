@@ -34,11 +34,7 @@ export class EventEmitter<EventMap extends EventRecord> {
     listener: EventListener<EventMap, Type>,
     once?: boolean,
   ): () => void {
-    let listeners = this.listeners[type];
-    if (!listeners) {
-      listeners = [];
-      this.listeners[type] = listeners;
-    }
+    const listeners = this.listeners[type] ||= [];
 
     if (once) {
       const originalListener = listener;
@@ -48,8 +44,10 @@ export class EventEmitter<EventMap extends EventRecord> {
       };
     }
 
-    if (listeners.includes(listener)) return () => this.off(type, listener);
-    listeners.splice(listeners.length, 0, listener);
+    if (!listeners.includes(listener)) {
+      listeners.splice(listeners.length, 0, listener);
+    }
+
     return () => this.off(type, listener);
   }
 
@@ -85,10 +83,10 @@ export class EventEmitter<EventMap extends EventRecord> {
     ...args: EventMap[Type]["args"]
   ): void {
     const listeners = this.listeners[type];
-    if (!listeners?.length) return;
-
-    for (const listener of listeners!) {
-      listener.apply(this, args);
+    if (listeners?.length) {
+      for (const listener of listeners!) {
+        listener.apply(this, args);
+      }
     }
   }
 }
