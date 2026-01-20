@@ -1,6 +1,10 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { Computed, Signal, type SignalOfObject } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import {
+  Computed,
+  Signal,
+  signalify,
+  type SignalOfObject,
+} from "../signals/mod.ts";
 import { Button, type ButtonOptions } from "./button.ts";
 
 export interface ComboBoxOptions<Items extends string[] = string[]>
@@ -34,8 +38,8 @@ export interface ComboBoxOptions<Items extends string[] = string[]>
  * });
  * ```
  */
-export class ComboBox<Items extends string[] = string[]> extends Button {
-  declare subComponents: { [button: number]: Button };
+export class ComboBox<Items extends string[] = string[]>
+  extends Button<{ [button: number]: Button }> {
   #subComponentsLength: number;
 
   items: Signal<Items>;
@@ -75,7 +79,7 @@ export class ComboBox<Items extends string[] = string[]> extends Button {
     });
   }
 
-  #updateItemButtons(): void {
+  #updateItemButtons = () => {
     const { subComponents } = this;
     const items = this.items.peek();
 
@@ -120,9 +124,9 @@ export class ComboBox<Items extends string[] = string[]> extends Button {
 
       subComponents[i] = button;
     }
-  }
+  };
 
-  interact(method: "mouse" | "keyboard"): void {
+  override interact(method: "mouse" | "keyboard"): void {
     super.interact(method);
 
     if (this.state.peek() === "active") {
