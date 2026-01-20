@@ -25,10 +25,10 @@ const _global: typeof globalThis & { process?: Process } = globalThis;
  * @see {@linkcode getConsoleSize} to retrieve the current console size.
  * @category TTY
  */
-export const defaultConsoleSize = {
+export const defaultConsoleSize: ConsoleSize = {
   columns: 80,
   rows: 24,
-} as const satisfies ConsoleSize;
+};
 
 export default defaultConsoleSize;
 
