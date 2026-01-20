@@ -1,7 +1,6 @@
 // Copyright 2023 Im-Beast. MIT license.
 import type { ComponentOptions } from "../component.ts";
-import { Computed, type Signal } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import { Computed, type Signal, signalify } from "../signals/mod.ts";
 import { Button } from "./button.ts";
 
 export enum Mark {
@@ -52,7 +51,7 @@ export class CheckBox extends Button {
     this.checked = checkedSignal;
   }
 
-  interact(method: "mouse" | "keyboard"): void {
+  override interact(method: "mouse" | "keyboard"): void {
     super.interact(method);
     if (this.state.peek() === "active") {
       this.checked.value = !this.checked.peek();
