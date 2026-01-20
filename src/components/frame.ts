@@ -1,11 +1,8 @@
 // Copyright 2023 Im-Beast. MIT license.
 import { Component, type ComponentOptions } from "../component.ts";
-
 import { BoxObject } from "../canvas/box.ts";
 import { TextObject } from "../canvas/text.ts";
-
-import { Computed, type Signal } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import { Computed, type Signal, signalify } from "../signals/mod.ts";
 
 export const FrameUnicodeCharacters = {
   sharp: {
@@ -86,7 +83,7 @@ export class Frame extends Component {
     );
   }
 
-  draw(): void {
+  override draw(): void {
     super.draw();
 
     const { canvas } = this.tui;

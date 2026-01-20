@@ -8,8 +8,7 @@ import type { Theme } from "../theme.ts";
 import type { DeepPartial } from "../types.ts";
 import { cropToWidth, insertAt } from "../utils/strings.ts";
 import { clamp } from "../utils/numbers.ts";
-import { Computed, Effect, Signal } from "../signals/mod.ts";
-import { signalify } from "../utils/signals.ts";
+import { Computed, Effect, Signal, signalify } from "../signals/mod.ts";
 import type { KeyPressEvent } from "../input_reader/types.ts";
 
 export interface CursorPosition {
@@ -223,7 +222,7 @@ export class TextBox extends Box {
     );
   }
 
-  draw(): void {
+  override draw(): void {
     super.draw();
 
     const { canvas } = this.tui;
@@ -270,7 +269,7 @@ export class TextBox extends Box {
     cursor.draw();
   }
 
-  interact(method: "keyboard" | "mouse"): void {
+  override interact(method: "keyboard" | "mouse"): void {
     this.state.value = "focused";
     super.interact(method);
   }
