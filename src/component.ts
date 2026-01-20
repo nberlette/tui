@@ -1,8 +1,9 @@
 // Copyright 2023 Im-Beast. MIT license.
+// deno-lint-ignore-file no-explicit-any
+
 import type { Tui } from "./tui.ts";
 import { hierarchizeTheme, type Style, type Theme } from "./theme.ts";
 import { type EmitterEvent, EventEmitter } from "./event_emitter.ts";
-
 import type { Rectangle } from "./types.ts";
 import { SortedArray } from "./utils/sorted_array.ts";
 import type { DrawObject } from "./canvas/draw_object.ts";
@@ -30,9 +31,29 @@ export interface Interaction {
 /** Possible states of a component */
 export type ComponentState = keyof Theme;
 
-export class Component extends EventEmitter<
-  { destroy: EmitterEvent<[Component]> } & InputEventRecord
-> {
+export type DrawnObjects = Record<string, DrawObject | DrawObject[]>;
+
+export type AnyComponent = Component<
+  DrawnObjects,
+  Record<string, Component<Record<string, any>>>
+>;
+
+type BaseEvents = { destroy: EmitterEvent<[Component]> } & InputEventRecord;
+
+export class Component<
+  TDrawnObjects extends DrawnObjects = Record<
+    string,
+    DrawObject | DrawObject[]
+  >,
+  TSubComponents extends Record<string, Component> = Record<
+    string,
+    AnyComponent
+  >,
+  TEvents extends Record<string, EmitterEvent<any[]>> = Record<
+    string,
+    EmitterEvent<any[]>
+  >,
+> extends EventEmitter<TEvents & BaseEvents> {
   #drawn: boolean;
   #destroyed: boolean;
 
@@ -49,8 +70,8 @@ export class Component extends EventEmitter<
   theme: Theme;
   parent: Component | Tui;
   children: SortedArray<Component>;
-  drawnObjects: Record<string, DrawObject | DrawObject[]>;
-  subComponents: Record<string, Component>;
+  drawnObjects: TDrawnObjects;
+  subComponents: TSubComponents;
   lastInteraction: Interaction;
 
   constructor(options: ComponentOptions) {
@@ -66,8 +87,8 @@ export class Component extends EventEmitter<
 
     this.parent.children.push(this);
     this.children = new SortedArray();
-    this.drawnObjects = {};
-    this.subComponents = {};
+    this.drawnObjects = {} as TDrawnObjects;
+    this.subComponents = {} as TSubComponents;
 
     this.lastInteraction = {
       time: -1,
