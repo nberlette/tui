@@ -1,18 +1,26 @@
 {
-  "deno.enable": true,
+  "deno.enablePaths": ["."],
   "deno.lint": true,
-  "deno.unstable": true,
-  "deno.config": "./deno.jsonc",
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+  "deno.cacheOnSave": true,
+  "deno.defaultTaskCommand": "run",
+  "deno.codeLens.test": true,
+  "deno.codeLens.testArgs": [
+    "--allow-all",
+    "--no-check",
+    "--parallel",
+    "--coverage=.coverage",
+    "--clean"
+  ],
+  "deno.testing.args": [
+    "--allow-all",
+    "--no-check=remote",
+    "--parallel",
+    "--coverage=.coverage",
+    "--clean",
+    "--doc"
+  ],
+  "[typescript][typescriptreact][javascript][javascriptreact][json][jsonc][yaml]": {
+    "editor.defaultFormatter": "denoland.vscode-deno",
+    "editor.formatOnSave": true
   }
 }
