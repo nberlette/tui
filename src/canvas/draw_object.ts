@@ -16,7 +16,7 @@ import { signalify } from "../signals/signalify.ts";
 import type { Subscription } from "../signals/types.ts";
 import { Effect } from "../signals/effect.ts";
 
-export interface DrawObjectOptions {
+export interface RenderableOptions {
   canvas: Canvas;
 
   omitCells?: number[];
@@ -30,10 +30,10 @@ export interface DrawObjectOptions {
 let id = 0;
 
 /**
- * Base DrawObject which works as a skeleton for creating
+ * Base Renderable which works as a skeleton for creating
  * draw objects which actually do something
  */
-export class DrawObject<Type extends string = string> {
+export class Renderable<Type extends string = string> {
   id: number;
   type: Type;
 
@@ -48,7 +48,7 @@ export class DrawObject<Type extends string = string> {
   rectangle!: Signal<Rectangle>;
   previousRectangle?: Rectangle;
 
-  objectsUnder: Set<DrawObject>;
+  objectsUnder: Set<Renderable>;
 
   omitCells: Set<number>[];
   rerenderCells: Set<number>[];
@@ -60,7 +60,7 @@ export class DrawObject<Type extends string = string> {
 
   #styleSubscription: Subscription<Style>;
 
-  constructor(type: Type, options: DrawObjectOptions) {
+  constructor(type: Type, options: RenderableOptions) {
     this.id = id++;
     this.type = type;
 
