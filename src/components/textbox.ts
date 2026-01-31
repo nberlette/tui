@@ -120,7 +120,7 @@ export class TextBox extends Box {
     this.#textLines = new Computed(() => this.text.value.split("\n"));
 
     new Effect(() => {
-      this.#updateLineDrawObjects();
+      this.#updateLineRenderables();
     });
 
     this.on(
@@ -231,7 +231,7 @@ export class TextBox extends Box {
     drawnObjects.lineNumbers = [];
     drawnObjects.lines = [];
 
-    this.#updateLineDrawObjects();
+    this.#updateLineRenderables();
 
     const cursorRectangle: TextRectangle = { column: 0, row: 0, width: 1 };
     const cursor = new TextObject({
@@ -274,7 +274,7 @@ export class TextBox extends Box {
     super.interact(method);
   }
 
-  #updateLineDrawObjects(): void {
+  #updateLineRenderables(): void {
     const { lineNumbers, lines } = this.drawnObjects;
 
     const { height } = this.rectangle.value;

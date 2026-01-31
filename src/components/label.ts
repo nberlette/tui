@@ -127,9 +127,9 @@ export class Label extends Component {
       const drawnTexts = (this.drawnObjects.texts ??= []).length;
 
       if (valueLines.length > drawnTexts) {
-        this.#fillDrawObjects();
+        this.#fillRenderables();
       } else if (valueLines.length < drawnTexts) {
-        this.#popUnusedDrawObjects();
+        this.#popUnusedRenderables();
       }
     });
   }
@@ -137,10 +137,10 @@ export class Label extends Component {
   override draw(): void {
     super.draw();
     this.drawnObjects.texts ??= [];
-    this.#fillDrawObjects();
+    this.#fillRenderables();
   }
 
-  #fillDrawObjects(): void {
+  #fillRenderables(): void {
     if (!this.#valueLines) throw new Error("#valueLines has to be set");
 
     const { drawnObjects } = this;
@@ -203,7 +203,7 @@ export class Label extends Component {
     }
   }
 
-  #popUnusedDrawObjects(): void {
+  #popUnusedRenderables(): void {
     if (!this.#valueLines) throw new Error("#valueLines has to be set");
 
     for (

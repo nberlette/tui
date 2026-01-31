@@ -152,12 +152,12 @@ export class Table extends Component {
     });
 
     this.data.subscribe((data) => {
-      const dataDrawObjects = this.drawnObjects.data?.length;
-      if (!dataDrawObjects) return;
-      if (data.length > dataDrawObjects) {
-        this.#fillDataDrawObjects();
-      } else if (data.length < dataDrawObjects) {
-        this.#popUnusedDataDrawObjects();
+      const dataRenderables = this.drawnObjects.data?.length;
+      if (!dataRenderables) return;
+      if (data.length > dataRenderables) {
+        this.#fillDataRenderables();
+      } else if (data.length < dataRenderables) {
+        this.#popUnusedDataRenderables();
       }
     });
 
@@ -265,7 +265,7 @@ export class Table extends Component {
 
     // Drawing data cells
     drawnObjects.data = [];
-    this.#fillDataDrawObjects();
+    this.#fillDataRenderables();
 
     // Drawing frame
     const frameStyleSignal = new Computed(() =>
@@ -388,7 +388,7 @@ export class Table extends Component {
     super.interact(method);
   }
 
-  #fillDataDrawObjects(): void {
+  #fillDataRenderables(): void {
     const { canvas } = this.tui;
     const { drawnObjects } = this;
 
@@ -448,7 +448,7 @@ export class Table extends Component {
     }
   }
 
-  #popUnusedDataDrawObjects(): void {
+  #popUnusedDataRenderables(): void {
     for (
       const dataCell of this.drawnObjects.data.splice(this.data.value.length)
     ) {
