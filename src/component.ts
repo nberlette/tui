@@ -6,7 +6,7 @@ import { hierarchizeTheme, type Style, type Theme } from "./theme.ts";
 import { type EmitterEvent, EventEmitter } from "./event_emitter.ts";
 import type { Rectangle } from "./types.ts";
 import { SortedArray } from "./utils/sorted_array.ts";
-import type { DrawObject } from "./canvas/draw_object.ts";
+import type { Renderable } from "./canvas/renderable.ts";
 import type { View } from "./view.ts";
 import type { InputEventRecord } from "./input_reader/mod.ts";
 import { Computed, Signal, type SignalOfObject } from "./signals/mod.ts";
@@ -31,7 +31,7 @@ export interface Interaction {
 /** Possible states of a component */
 export type ComponentState = keyof Theme;
 
-export type DrawnObjects = Record<string, DrawObject | DrawObject[]>;
+export type DrawnObjects = Record<string, Renderable | Renderable[]>;
 
 export type AnyComponent = Component<
   DrawnObjects,
@@ -43,7 +43,7 @@ type BaseEvents = { destroy: EmitterEvent<[Component]> } & InputEventRecord;
 export class Component<
   TDrawnObjects extends DrawnObjects = Record<
     string,
-    DrawObject | DrawObject[]
+    Renderable | Renderable[]
   >,
   TSubComponents extends Record<string, Component> = Record<
     string,
