@@ -144,7 +144,7 @@ export class ProgressBar extends Box<{ progress: BoxObject | TextObject[] }> {
 
     if (this.smooth.peek()) {
       this.drawnObjects.progress = [];
-      this.#fillSmoothDrawObjects();
+      this.#fillSmoothRenderables();
     } else {
       const progressRectangle = { column: 0, row: 0, width: 0, height: 0 };
       const progress = new BoxObject({
@@ -177,9 +177,9 @@ export class ProgressBar extends Box<{ progress: BoxObject | TextObject[] }> {
           const { progress } = this.drawnObjects;
           if (Array.isArray(progress)) {
             if (progress.length > height) {
-              this.#popUnusedSmoothDrawObjects();
+              this.#popUnusedSmoothRenderables();
             } else if (progress.length < height) {
-              this.#fillSmoothDrawObjects();
+              this.#fillSmoothRenderables();
             }
           }
 
@@ -203,7 +203,7 @@ export class ProgressBar extends Box<{ progress: BoxObject | TextObject[] }> {
     super.interact(method);
   }
 
-  #fillSmoothDrawObjects = () => {
+  #fillSmoothRenderables = () => {
     if (!Array.isArray(this.drawnObjects.progress)) {
       throw new Error("drawnObjects.progress needs to be an array");
     }
@@ -273,7 +273,7 @@ export class ProgressBar extends Box<{ progress: BoxObject | TextObject[] }> {
     }
   };
 
-  #popUnusedSmoothDrawObjects = () => {
+  #popUnusedSmoothRenderables = () => {
     if (!Array.isArray(this.drawnObjects.progress)) {
       throw new Error("drawnObjects.progress needs to be an array");
     }
