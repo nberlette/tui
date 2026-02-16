@@ -7,7 +7,7 @@
     "./canvas": "./src/canvas/mod.ts",
     "./canvas/box": "./src/canvas/box.ts",
     "./canvas/core": "./src/canvas/canvas.ts",
-    "./canvas/draw-object": "./src/canvas/draw_object.ts",
+    "./canvas/renderable": "./src/canvas/renderable.ts",
     "./canvas/text": "./src/canvas/text.ts",
     "./component": "./src/component.ts",
     "./components": "./src/components/mod.ts",
