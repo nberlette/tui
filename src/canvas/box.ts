@@ -1,20 +1,20 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { DrawObject, type DrawObjectOptions } from "./draw_object.ts";
+import { Renderable, type RenderableOptions } from "./renderable.ts";
 import type { Signal, SignalOfObject } from "../signals/mod.ts";
 
 import type { Rectangle } from "../types.ts";
 import { signalify } from "../signals/signalify.ts";
 import type { Subscription } from "../signals/types.ts";
 
-export interface BoxObjectOptions extends DrawObjectOptions {
+export interface BoxObjectOptions extends RenderableOptions {
   rectangle: Rectangle | SignalOfObject<Rectangle>;
   filler?: string | Signal<string>;
 }
 
 /**
- * DrawObject that's responsible for rendering rectangles (boxes).
+ * Renderable that's responsible for rendering rectangles (boxes).
  */
-export class BoxObject extends DrawObject<"box"> {
+export class BoxObject extends Renderable<"box"> {
   filler: Signal<string>;
 
   #rectangleSubscription: Subscription<Rectangle>;

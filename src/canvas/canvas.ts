@@ -8,7 +8,7 @@ import { SortedArray } from "../utils/sorted_array.ts";
 import { rectangleIntersection } from "../utils/numbers.ts";
 
 import type { ConsoleSize, Stdout } from "../types.ts";
-import type { DrawObject } from "./draw_object.ts";
+import type { Renderable } from "./renderable.ts";
 import type { Signal, SignalOfObject } from "../signals/mod.ts";
 import { signalify } from "../signals/signalify.ts";
 
@@ -37,8 +37,8 @@ export class Canvas extends EventEmitter<CanvasEventMap> {
   rerenderedObjects?: number;
   frameBuffer: (string | Uint8Array)[][];
   rerenderQueue: Set<number>[];
-  drawnObjects: SortedArray<DrawObject>;
-  updateObjects: DrawObject[];
+  drawnObjects: SortedArray<Renderable>;
+  updateObjects: Renderable[];
   resizeNeeded: boolean;
 
   constructor(options: CanvasOptions) {
@@ -73,7 +73,7 @@ export class Canvas extends EventEmitter<CanvasEventMap> {
     }
   }
 
-  updateIntersections(object: DrawObject): void {
+  updateIntersections(object: Renderable): void {
     const { omitCells, objectsUnder } = object;
 
     const zIndex = object.zIndex.peek();

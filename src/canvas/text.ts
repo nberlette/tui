@@ -1,5 +1,5 @@
 // Copyright 2023 Im-Beast. MIT license.
-import { DrawObject, type DrawObjectOptions } from "./draw_object.ts";
+import { Renderable, type RenderableOptions } from "./renderable.ts";
 
 import { getMultiCodePointCharacters, textWidth } from "../utils/strings.ts";
 import {
@@ -19,7 +19,7 @@ import type { Subscription } from "../signals/types.ts";
  */
 export type TextRectangle = { column: number; row: number; width?: number };
 
-export interface TextObjectOptions extends DrawObjectOptions {
+export interface TextObjectOptions extends RenderableOptions {
   value: string | Signal<string>;
   overwriteRectangle?: boolean | Signal<boolean>;
   rectangle: TextRectangle | SignalOfObject<TextRectangle>;
@@ -27,11 +27,11 @@ export interface TextObjectOptions extends DrawObjectOptions {
 }
 
 /**
- * DrawObject that's responsible for rendering text.
+ * Renderable that's responsible for rendering text.
  *
  * Keep in mind its not designed to render mutliline text!
  */
-export class TextObject extends DrawObject<"text"> {
+export class TextObject extends Renderable<"text"> {
   text: Signal<string>;
   valueChars: string[] | string;
   overwriteRectangle: Signal<boolean>;
