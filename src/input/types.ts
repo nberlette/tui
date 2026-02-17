@@ -1,4 +1,5 @@
-AAAAAAAAAAAAAAAAAAAAAAAA
+import type { Range } from "../types.ts";
+
 /** Interface defining key press issued to stdin */
 export interface KeyPressEvent {
   key: Key;
@@ -43,8 +44,8 @@ export type Key =
   | Alphabet
   | Chars
   | SpecialKeys
-  | `${types.Range<0, 10>}`
-  | `f${types.Range<1, 12>}`;
+  | `${Range<0, 10>}`
+  | `f${Range<1, 12>}`;
 
 /** Type defining letters from the latin alphabet */
 export type Alphabet =

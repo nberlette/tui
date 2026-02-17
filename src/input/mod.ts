@@ -25,7 +25,7 @@ export async function emitInputEvents(
   stdin: Stdin,
   emitter: EventEmitter<InputEventRecord>,
   minReadInterval = 1000 / 60,
-) {
+): Promise<void> {
   try {
     stdin.setRaw(true, { cbreak: Deno.build.os !== "windows" });
   } catch {
