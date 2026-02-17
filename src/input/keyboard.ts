@@ -1,6 +1,6 @@
-// Copyright 2023 Im-Beast. MIT license.
+3// Copyright 2023 Im-Beast. MIT license.
 /** Decode code sequence to {KeyPress} object. */
-import type { Alphabet, Key, KeyPressEvent } from "../types.ts";
+import type { Alphabet, Key, KeyPressEvent } from "./types.ts";
 
 const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
 

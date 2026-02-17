@@ -7,8 +7,8 @@ import type {
   MouseScrollEvent,
 } from "./types.ts";
 import type { Stdin } from "../types.ts";
-import { decodeMouseSGR, decodeMouseVT_UTF8 } from "./decoders/mouse.ts";
-import { decodeKey } from "./decoders/keyboard.ts";
+import { decodeMouseSGR, decodeMouseVT_UTF8 } from "./mouse.ts";
+import { decodeKey } from "./keyboard.ts";
 import type { EmitterEvent, EventEmitter } from "../event_emitter.ts";
 
 export type InputEventRecord = {

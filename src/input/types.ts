@@ -1,6 +1,4 @@
-// Copyright 2023 Im-Beast. MIT license.
-import type { Range } from "../types.ts";
-
+AAAAAAAAAAAAAAAAAAAAAAAA
 /** Interface defining key press issued to stdin */
 export interface KeyPressEvent {
   key: Key;
@@ -45,8 +43,8 @@ export type Key =
   | Alphabet
   | Chars
   | SpecialKeys
-  | `${Range<0, 10>}`
-  | `f${Range<1, 12>}`;
+  | `${types.Range<0, 10>}`
+  | `f${types.Range<1, 12>}`;
 
 /** Type defining letters from the latin alphabet */
 export type Alphabet =
