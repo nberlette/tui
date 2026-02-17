@@ -1,4 +1,3 @@
-// Copyright 2023 Im-Beast. MIT license.
 import type { Range } from "../types.ts";
 
 /** Interface defining key press issued to stdin */

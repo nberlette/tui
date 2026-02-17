@@ -3,7 +3,7 @@ import type {
   MouseEvent,
   MousePressEvent,
   MouseScrollEvent,
-} from "../types.ts";
+} from "./types.ts";
 
 let mouseEvent: MouseEvent = {
   key: "mouse",
@@ -11,7 +11,7 @@ let mouseEvent: MouseEvent = {
   y: 0,
   movementX: 0,
   movementY: 0,
-  buffer: undefined as unknown as Uint8Array,
+  buffer: undefined!,
   shift: false,
   ctrl: false,
   meta: false,
@@ -32,7 +32,7 @@ export function decodeMouseSGR(
 ): MousePressEvent | MouseScrollEvent | undefined {
   const action = code.at(-1);
   if (!code.startsWith("\x1b[<") || (action !== "m" && action !== "M")) {
-    return undefined;
+    return undefined;SSS
   }
 
   const release = action === "m";
