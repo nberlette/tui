@@ -1,0 +1,11 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@crayon/crayon@4.0.0-alpha.4": "4.0.0-alpha.4"
+  },
+  "jsr": {
+    "@crayon/crayon@4.0.0-alpha.4": {
+      "integrity": "812afa0488d6b2a3691d23540493b2280e627ed0aa88ed8161625327b24467b2"
+    }
+  }
+}
