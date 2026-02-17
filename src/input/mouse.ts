@@ -1,9 +1,5 @@
 // Copyright 2023 Im-Beast. MIT license.
-import type {
-  MouseEvent,
-  MousePressEvent,
-  MouseScrollEvent,
-} from "./types.ts";
+import type { MouseEvent, MousePressEvent, MouseScrollEvent } from "./types.ts";
 
 let mouseEvent: MouseEvent = {
   key: "mouse",
@@ -32,7 +28,8 @@ export function decodeMouseSGR(
 ): MousePressEvent | MouseScrollEvent | undefined {
   const action = code.at(-1);
   if (!code.startsWith("\x1b[<") || (action !== "m" && action !== "M")) {
-    return undefined;SSS
+    return undefined;
+    SSS;
   }
 
   const release = action === "m";
