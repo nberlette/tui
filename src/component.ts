@@ -8,7 +8,7 @@ import type { Rectangle } from "./types.ts";
 import { SortedArray } from "./utils/sorted_array.ts";
 import type { Renderable } from "./canvas/renderable.ts";
 import type { View } from "./view.ts";
-import type { InputEventRecord } from "./input_reader/mod.ts";
+import type { InputEventRecord } from "./input/mod.ts";
 import { Computed, Signal, type SignalOfObject } from "./signals/mod.ts";
 import { signalify } from "./signals/signalify.ts";
 
