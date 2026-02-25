@@ -9,7 +9,7 @@ import type { DeepPartial } from "../types.ts";
 import { cropToWidth, insertAt } from "../utils/strings.ts";
 import { clamp } from "../utils/numbers.ts";
 import { Computed, Effect, Signal, signalify } from "../signals/mod.ts";
-import type { KeyPressEvent } from "../input_reader/types.ts";
+import type { KeyPressEvent } from "../input/types.ts";
 
 export interface CursorPosition {
   x: number;

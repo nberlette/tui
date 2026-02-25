@@ -91,12 +91,11 @@ export interface InputOptions extends Omit<ComponentOptions, "rectangle"> {
  * });
  * ```
  */
-export class Input extends Box {
-  declare drawnObjects: {
-    box: BoxObject;
-    text: TextObject;
-    cursor: TextObject;
-  };
+export class Input extends Box<{
+  box: BoxObject;
+  text: TextObject;
+  cursor: TextObject;
+}> {
   declare theme: InputTheme;
 
   text: Signal<string>;

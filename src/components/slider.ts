@@ -58,8 +58,7 @@ export interface SliderOptions extends ComponentOptions {
  * });
  * ```
  */
-export class Slider extends Box {
-  declare drawnObjects: { box: BoxObject; thumb: BoxObject };
+export class Slider extends Box<{ box: BoxObject; thumb: BoxObject }> {
   declare theme: SliderTheme;
 
   min: Signal<number>;

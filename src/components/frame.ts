@@ -64,14 +64,12 @@ export interface FrameOptions extends ComponentOptions {
  * });
  * ```
  */
-export class Frame extends Component {
-  declare drawnObjects: {
-    top: TextObject;
-    bottom: TextObject;
-    left: BoxObject;
-    right: BoxObject;
-  };
-
+export class Frame extends Component<{
+  top: TextObject;
+  bottom: TextObject;
+  left: BoxObject;
+  right: BoxObject;
+}> {
   charMap: Signal<FrameUnicodeCharactersType>;
 
   constructor(options: FrameOptions) {
