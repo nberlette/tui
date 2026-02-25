@@ -1,5 +1,13 @@
 // deno-lint-ignore no-explicit-any
-const _global: any = globalThis;
+const _global: any = (() => {
+  try {
+    // deno-lint-ignore no-node-globals
+    return (0, eval)("this") || self || window || globalThis || global;
+  } catch (_) {
+    // deno-lint-ignore no-node-globals
+    return self || window || globalThis || global;
+  }
+})();
 
 export type Runtime =
   | "node"
