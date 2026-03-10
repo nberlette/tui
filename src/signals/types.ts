@@ -10,6 +10,7 @@ export interface Subscription<T> {
 export interface Dependency {
   /** Attach dependant to this Dependency */
   depend(dependant: Dependant): void;
+
   /** All dependants that rely on this Dependency */
   dependants?: Set<Dependant>;
 }
@@ -30,4 +31,14 @@ export interface LazyDependant extends Dependant {
   interval?: number;
   flusher?: Flusher;
   lastFired: number;
+}
+
+export type Dependish = Dependency | (Dependency & Dependant);
+
+export interface Disposable {
+  [Symbol.dispose](): void;
+}
+
+export interface AsyncDisposable {
+  [Symbol.asyncDispose](): void | Promise<void>;
 }

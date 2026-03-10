@@ -3,15 +3,7 @@ import { Signal } from "./signal.ts";
 import type { Dependant, Dependency } from "./types.ts";
 
 import { activeSignals, trackDependencies } from "./dependency_tracking.ts";
-
-/** Thrown whenever someone tries to directly modify `Computed.value` */
-export class ComputedReadOnlyError extends Error {
-  constructor() {
-    super(
-      "Computed is read-only, you can't (and shouldn't!) directly modify its value",
-    );
-  }
-}
+import { ComputedReadOnlyError } from "./errors.ts";
 
 /** Function that's used to calculate `Computed`'s value */
 export interface Computable<T> {

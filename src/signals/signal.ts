@@ -1,4 +1,5 @@
 // Copyright 2023 Im-Beast. MIT license.
+// deno-lint-ignore-file no-explicit-any
 import { activeSignals } from "./dependency_tracking.ts";
 import {
   makeMapMethodsReactive,
@@ -7,16 +8,12 @@ import {
   ORIGINAL_REF,
   type Reactive,
 } from "./reactivity.ts";
+import { SignalDeepObserveTypeofError } from "./errors.ts";
 import type { Dependant, Dependency, Subscription } from "./types.ts";
 
 // TODO: Make dispose revert reactive value modifications
 
-/** Thrown whenever `deepObserve` is set and `typeof value !== "object"` */
-export class SignalDeepObserveTypeofError extends Error {
-  constructor() {
-    super("You can only deeply observe value with typeof 'object'");
-  }
-}
+type Collection<K = any, V = any> = Map<K, V> | Set<K>;
 
 export interface SignalOptions<T> {
   /**
@@ -36,8 +33,7 @@ export interface SignalOptions<T> {
    *  - When set to `false` it uses `Object.defineProperty` to watch properties
    *    that existed at the time of creating signal.
    */
-  watchObjectIndex?: T extends Map<unknown, unknown> | Set<unknown> ? never
-    : boolean;
+  watchObjectIndex?: boolean & (T extends Collection ? never : unknown);
   /**
    * @requires T to be `instanceof Map`
    *
@@ -46,7 +42,7 @@ export interface SignalOptions<T> {
    *  - When set to `true` it checks whether value changed.
    *  - When set to `false` it checks whether map size changed (default).
    */
-  watchMapUpdates?: T extends Map<unknown, unknown> ? boolean : never;
+  watchMapUpdates?: boolean & (T extends Map<any, any> ? unknown : never);
 }
 
 /**
