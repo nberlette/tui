@@ -75,9 +75,7 @@ export class Effect implements Dependant, Disposable {
     if (this.disposed) {
       throw new ReferenceError("Effect already disposed");
     } else {
-      for (const { dependants } of this.dependencies) {
-        dependants?.delete(this);
-      }
+      for (const dep of this.dependencies) dep.dependants?.delete(this);
       this.dependencies.clear();
       this.disposed = true;
     }

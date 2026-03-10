@@ -2,7 +2,7 @@
 export class ComputedReadOnlyError extends Error {
   constructor() {
     super(
-      "Computed values are read-only and cannot be directly modified. If you need to change the value, change the signals it depends on instead."
+      "Computed values are read-only and cannot be directly modified. If you need to change the value, change the signals it depends on instead.",
     );
     this.name = "ComputedReadOnlyError";
   }

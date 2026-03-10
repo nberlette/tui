@@ -67,18 +67,15 @@ export class Computed<T> extends Signal<T> implements Dependant, Dependency {
     if (
       this.$value !== (this.$value = this.computable(cause)) ||
       this.forceUpdateValue
-    ) {
-      this.propagate(cause);
-    }
+    ) this.propagate(cause);
   }
 
   override dispose(): void {
     super.dispose();
 
-    const { dependencies } = this;
-    for (const dependency of dependencies) {
-      dependency.dependants!.delete(this);
-      dependencies.delete(dependency);
+    for (const dependency of this.dependencies) {
+      dependency.dependants?.delete(this);
+      this.dependencies.delete(dependency);
     }
   }
 }

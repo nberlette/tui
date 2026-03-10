@@ -36,9 +36,7 @@ export class Flusher implements Dependency {
 
   flush(): void {
     const { dependants } = this;
-    for (const dependant of dependants) {
-      dependant.update(this);
-    }
+    for (const dependant of dependants) dependant.update(this);
     dependants.clear();
   }
 }
