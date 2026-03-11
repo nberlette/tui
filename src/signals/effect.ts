@@ -61,7 +61,7 @@ export class Effect implements Dependant, Disposable {
 
   update(cause: Dependency | Dependant): void {
     if (this.paused) {
-      throw "Something called update() on effect while being paused";
+      throw new Error("Something called update() on effect while being paused");
     }
 
     this.$effectable(cause);
@@ -75,9 +75,7 @@ export class Effect implements Dependant, Disposable {
     if (this.disposed) {
       throw new ReferenceError("Effect already disposed");
     } else {
-      for (const { dependants } of this.dependencies) {
-        dependants?.delete(this);
-      }
+      for (const dep of this.dependencies) dep.dependants?.delete(this);
       this.dependencies.clear();
       this.disposed = true;
     }
@@ -88,10 +86,12 @@ export class Effect implements Dependant, Disposable {
    * - Doesn't clear dependencies, can be resumed!
    */
   pause(): void {
-    this.paused = true;
-
-    for (const dependency of this.dependencies) {
-      dependency.dependants?.delete(this);
+    if (this.disposed) {
+      throw new ReferenceError("Effect already disposed");
+    }
+    if (!this.paused) {
+      this.paused = true;
+      for (const dep of this.dependencies) dep.dependants?.delete(this);
     }
   }
 
@@ -99,14 +99,20 @@ export class Effect implements Dependant, Disposable {
    * - Adds itself to all dependencies dependants
    */
   resume(): void {
-    this.paused = false;
-
-    for (const dependency of this.dependencies) {
-      dependency.depend(this);
+    if (this.disposed) {
+      throw new ReferenceError("Effect already disposed");
+    }
+    if (this.paused) {
+      this.paused = false;
+      for (const dep of this.dependencies) dep.depend(this);
     }
   }
 
   [Symbol.dispose](): void {
     this.dispose();
   }
+}
+
+export function effect(effectable: Effectable): Effect {
+  return new Effect(effectable);
 }

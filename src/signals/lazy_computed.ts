@@ -1,42 +1,47 @@
 // Copyright 2023 Im-Beast. MIT license.
+import { performance } from "../utils/performance.ts";
 import { type Computable, Computed } from "./computed.ts";
-import type { Dependency } from "./types.ts";
 import { Flusher } from "./flusher.ts";
-
-import type { LazyDependant } from "./types.ts";
+import type { Dependency, LazyDependant } from "./types.ts";
 
 // TODO: Tests
 
-interface LazyComputedOptions {
+export interface LazyComputedOptions {
   interval: number;
   flusher: Flusher;
 }
 
 /**
  * LazyComputed is a type of signal that depends on other signals and updates
- * when any of them changes
- * - If time between updates is smaller than given interval it gets delayed
- * - If given `Flusher` instead, it will update after `Flusher.flush()` gets
- *   called
+ * when any of them changes. Be aware of its caveats, however, as it can delay
+ * updates to avoid too many of them in a short time.
+ *
+ * - If time between updates is smaller than given interval, it is delayed.
+ * - If given a `Flusher`, it will update after `Flusher.flush()` is called.
  * - Both interval and `Flusher` might be set at the same time.
  *
  * @example
  * ```ts
  * const multiplicand = new Signal(1);
  * const multiplier = new Signal(2);
- * const product = new LazyComputed(() => multiplicand.value * multiplier.value, 16);
+ * const product = new LazyComputed(
+ *   () => multiplicand.value * multiplier.value,
+ *   16,
+ * );
  *
  * console.log(product.value); // 2
- * await Promise.resolve(); // Dependency tracking is asynchronous read more in `dependency_tracking.ts`
+ *
+ * // Dependency tracking is asynchronous (see `dependency_tracking.ts`)
+ * await Promise.resolve(); // wait for next tick
  *
  * multiplicand.value = 2;
- * console.log(product.value); // 2
- * multiplier.value = 7;
- * console.log(product.value); // 2
+ * console.log(product.value); // => 2
  *
- * setTimeout(() => {
- *  console.log(product.value); // 14
- * }, 16)
+ * multiplier.value = 7;
+ * console.log(product.value); // => 2
+ *
+ * // wait until the timeout of LazyComputed gets executed
+ * setTimeout(() => console.log(product.value), 16); // => 14
  * ```
  */
 export class LazyComputed<T> extends Computed<T> implements LazyDependant {
@@ -79,9 +84,7 @@ export class LazyComputed<T> extends Computed<T> implements LazyDependant {
       return;
     }
 
-    if (flusher) {
-      flusher.depend(this);
-    }
+    flusher?.depend(this);
 
     if (interval) {
       const timeDifference = performance.now() - this.lastFired;

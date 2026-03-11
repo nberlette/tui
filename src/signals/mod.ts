@@ -2,6 +2,7 @@
 export * from "./computed.ts";
 export * from "./dependency_tracking.ts";
 export * from "./effect.ts";
+export * from "./errors.ts";
 export * from "./flusher.ts";
 export * from "./lazy_computed.ts";
 export * from "./lazy_effect.ts";

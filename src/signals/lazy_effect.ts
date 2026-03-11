@@ -1,21 +1,23 @@
 // Copyright 2023 Im-Beast. MIT license.
+import { performance } from "../utils/performance.ts";
 import { Effect, type Effectable } from "./effect.ts";
 import { Flusher } from "./flusher.ts";
-
 import type { Dependant, Dependency, LazyDependant } from "./types.ts";
 
 // TODO: Tests
 
-interface LazyEffectOptions {
+export interface LazyEffectOptions {
   interval: number;
   flusher: Flusher;
 }
 
 /**
- * LazyEffect is an container for callback function, which runs every time any of its dependencies get updated.
- * When initialized that functions gets ran and all dependencies for it are tracked.
+ * LazyEffect is an container for callback function, which runs every time any
+ * of its dependencies get updated. When initialized that functions gets ran
+ * and all dependencies for it are tracked.
  * - If time between updates is smaller than given interval it gets delayed
- * - If given `Flusher` instead, it will update after `Flusher.flush()` gets called
+ * - If given `Flusher` instead, it will update after `Flusher.flush()` gets
+ *   called
  * - Both interval and `Flusher` might be set at the same time.
  *
  * @example
@@ -62,14 +64,14 @@ export class LazyEffect extends Effect implements LazyDependant {
       this.#updateCallback = () => this.update(this);
     }
 
-    [].slice();
     this.lastFired = performance.now();
   }
 
   override update(cause: Dependency | Dependant): void {
     const { flusher, interval } = this;
 
-    if (flusher) flusher.depend(this);
+    flusher?.depend(this);
+
     if (interval) {
       const timeDifference = performance.now() - this.lastFired;
       if (timeDifference < interval) {
