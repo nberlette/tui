@@ -16,8 +16,8 @@ describe("sortedArray", async ({ step: it }) => {
     assertEquals(instance instanceof SortedArray, true);
   });
   await it("should require the `new` operator", () => {
-    // @ts-expect-error - this is intentional
     assert.throws(() => {
+      // @ts-expect-error - this is intentional
       SortedArray();
     }, TypeError);
   });
