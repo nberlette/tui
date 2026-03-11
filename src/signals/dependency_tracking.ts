@@ -7,42 +7,44 @@ let incoming = 0;
 /**
  * Asynchronously tracks used signals for provided function
  */
-export async function trackDependencies(
-  dependencies: Set<Dependency>,
+export async function track<T extends Dependish>(
+  dependencies: Set<T>,
   thisArg: unknown,
   // this is supposed to mean every function
   // deno-lint-ignore ban-types
   func: Function,
 ): Promise<void> {
-  while (incoming !== 0) {
-    await Promise.resolve();
-  }
+  while (incoming) await Promise.resolve();
 
   ++incoming;
   activeSignals = dependencies;
+
   try {
     func.call(thisArg);
   } catch (error) {
     incoming = 0;
     throw error;
+  } finally {
+    activeSignals = undefined;
+    --incoming;
   }
-  activeSignals = undefined;
-  --incoming;
 }
 
 /**
  * Replaces all dependencies with root dependencies to prevent multiple updates caused by the same change.
  */
-export function optimizeDependencies(
-  into: Set<Dependency | (Dependency & Dependant)>,
-  from = into,
+export function optimize<T extends Dependish>(
+  into: Set<T>,
+  from: Iterable<T> = into,
 ): void {
   for (const dependency of from) {
     if ("dependencies" in dependency) {
       into.delete(dependency);
-      optimizeDependencies(into, dependency.dependencies);
+      optimize(into, dependency.dependencies);
     } else {
       into.add(dependency);
     }
   }
 }
+
+export { optimize as optimizeDependencies, track as trackDependencies };

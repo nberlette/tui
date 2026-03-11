@@ -112,3 +112,7 @@ export class Effect implements Dependant, Disposable {
     this.dispose();
   }
 }
+
+export function effect(effectable: Effectable): Effect {
+  return new Effect(effectable);
+}

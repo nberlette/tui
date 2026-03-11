@@ -79,3 +79,7 @@ export class Computed<T> extends Signal<T> implements Dependant, Dependency {
     }
   }
 }
+
+export function computed<T>(computable: Computable<T>): Computed<T> {
+  return new Computed(computable);
+}

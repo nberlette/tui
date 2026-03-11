@@ -45,6 +45,8 @@ export interface SignalOptions<T> {
   watchMapUpdates?: boolean & (T extends Map<any, any> ? unknown : never);
 }
 
+let __is_signal = (it: unknown): boolean => (void it, false);
+
 /**
  * Signal wraps value in a container.
  *
@@ -59,7 +61,7 @@ export interface SignalOptions<T> {
  * ```
  */
 export class Signal<T> implements Dependency {
-  protected $value: T;
+  #value: T;
 
   // Dependant: something that depends on THIS
   dependants?: Set<Dependant>;
@@ -84,7 +86,15 @@ export class Signal<T> implements Dependency {
         );
       }
     }
-    this.$value = value;
+    this.#value = value;
+  }
+
+  protected get $value(): T {
+    return this.#value;
+  }
+
+  protected set $value(value: T) {
+    this.#value = value;
   }
 
   /** Bind function to signal, it'll be called each time signal's value changes and is equal to {conditionValues} */
@@ -159,13 +169,13 @@ export class Signal<T> implements Dependency {
       }
     }
 
-    if (!dependants?.size) return;
-
-    for (const dependant of dependants) {
-      if ("forceUpdateValue" in dependant) {
-        dependant.forceUpdateValue = true;
+    if (dependants?.size) {
+      for (const dependant of dependants) {
+        if ("forceUpdateValue" in dependant) {
+          dependant.forceUpdateValue = true;
+        }
+        dependant.update(cause ?? this);
       }
-      dependant.update(cause ?? this);
     }
   }
 
@@ -192,16 +202,15 @@ export class Signal<T> implements Dependency {
 
     subscriptions?.clear();
 
-    if (!dependants) return;
-    for (const dependant of dependants) {
-      dependants.delete(dependant);
-      dependant.dependencies.delete(this);
+    if (dependants?.size) {
+      for (const dependant of dependants) {
+        dependants.delete(dependant);
+        dependant.dependencies.delete(this);
 
-      // If dependant has no more dependencies then
-      // it means that it should be replaced with constant value,
-      // because nothing can update its value anymore
-      if (!dependant.dependencies) {
-        dependant.dispose();
+        // If dependant has no more dependencies then
+        // it means that it should be replaced with constant value,
+        // because nothing can update its value anymore
+        if (!dependant.dependencies) dependant.dispose();
       }
     }
   }
@@ -244,9 +253,12 @@ export class Signal<T> implements Dependency {
   [Symbol.toPrimitive](hint: "number"): number;
   [Symbol.toPrimitive](hint: "string" | "default"): string;
   [Symbol.toPrimitive](hint: "string" | "number" | "default"): string | number;
-  [Symbol.toPrimitive](hint: "string" | "number" | "default"): string | number {
-    if (hint === "number") return Number(this.$value);
-    return String(this.$value);
+  [Symbol.toPrimitive](hint: string): string | number {
+    return (hint === "number" ? Number : String)(this.$value);
+  }
+
+  static {
+    __is_signal = (it) => #value in Object(it);
   }
 }
 
@@ -274,3 +286,9 @@ export class Signal<T> implements Dependency {
  * ```
  */
 export type SignalOfObject<T> = Signal<T> & { [key in keyof T]?: never };
+
+export type SignalLike<T> = T | Signal<T>;
+
+export function isSignal<T>(it: SignalLike<T>): it is Signal<T> {
+  return typeof it === "object" && it !== null && __is_signal(it);
+}
