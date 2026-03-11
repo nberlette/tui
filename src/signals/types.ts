@@ -19,10 +19,12 @@ export interface Dependency {
 export interface Dependant {
   /** Set of all dependencies Dependant relies on */
   dependencies: Set<Dependency>;
-  /** Destroy dependant, clear its dependencies */
-  dispose(): void;
+
   /** Method which updates Dependants state/value */
   update(cause: Dependency | Dependant): void;
+
+  /** Destroy dependant, clear its dependencies */
+  dispose(): void;
 }
 
 /** Element which relies on dependencies to function and updates either after specified interval or when flusher gets flushed */

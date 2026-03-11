@@ -2,7 +2,7 @@
 // Copyright 2018-2025 the Deno authors. MIT license.
 
 import { isDeno, isNodeLike } from "../utils/runtime.ts";
-
+import { ObjectAssign, ObjectDefineProperty } from "../utils/primordials.ts";
 // @ts-types="npm:@types/node@22/process"
 import p from "node:process";
 
@@ -72,8 +72,6 @@ export interface Stderr {
   isTerminal(): boolean;
 }
 
-const { assign, defineProperty } = Object;
-
 export class Stderr {
   constructor(impl?: Stderr) {
     if (!impl) {
@@ -93,7 +91,7 @@ export class Stderr {
       }
     }
 
-    assign(this, impl);
+    ObjectAssign(this, impl);
     this.writeSync = this.writeSync.bind(impl);
     this.write ??= (p) => Promise.resolve(this.writeSync(p));
     this.write = this.write.bind(impl);
@@ -102,25 +100,30 @@ export class Stderr {
     this.isTerminal ??= () => false;
     this.isTerminal = this.isTerminal.bind(impl);
 
-    defineProperty(this, "writable", {
-      get() {
-        if (impl && "writable" in impl) {
-          return impl.writable;
-        } else {
-          return new WritableStream<Uint8Array>({
-            write: async (chunk) => {
-              for (
-                let n = 0;
-                n < chunk.byteLength;
-                n += await this.write(chunk.subarray(n))
-              );
-            },
-          });
-        }
-      },
-      set() {},
-      configurable: true,
-      enumerable: true,
-    });
+    ObjectDefineProperty(
+      this,
+      "writable",
+      {
+        __proto__: impl,
+        get() {
+          if (impl && "writable" in impl) {
+            return impl.writable;
+          } else {
+            return new WritableStream<Uint8Array>({
+              write: async (chunk) => {
+                for (
+                  let n = 0;
+                  n < chunk.byteLength;
+                  n += await this.write(chunk.subarray(n))
+                );
+              },
+            });
+          }
+        },
+        set() {},
+        configurable: true,
+        enumerable: true,
+      } as PropertyDescriptor & ThisType<Stderr>,
+    );
   }
 }

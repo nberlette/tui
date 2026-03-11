@@ -2,7 +2,11 @@
 import type { Dependant, Dependency, LazyDependant } from "./types.ts";
 
 /**
- * Flusher tracks
+ * Flusher tracks dependants and updates them when `flush()` gets called.
+ *
+ * It can be used to delay updates of `LazyComputed` dependants until some
+ * condition is met, for example until next animation frame or until some
+ * expensive calculations get done.
  *
  * @example
  * ```ts

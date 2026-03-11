@@ -79,9 +79,7 @@ export class LazyComputed<T> extends Computed<T> implements LazyDependant {
       return;
     }
 
-    if (flusher) {
-      flusher.depend(this);
-    }
+    flusher?.depend(this);
 
     if (interval) {
       const timeDifference = performance.now() - this.lastFired;
