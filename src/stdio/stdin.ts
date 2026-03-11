@@ -2,6 +2,8 @@
 // Copyright 2018-2025 the Deno authors. MIT license.
 
 import { isDeno, isNodeLike } from "../utils/runtime.ts";
+import type { Reshape } from "../utils/types.ts";
+import { ObjectAssign, ObjectDefineProperty } from "../utils/primordials.ts";
 import process from "node:process";
 
 /** @category I/O */
@@ -10,6 +12,7 @@ export interface SetRawOptions {
    * The `cbreak` option can be used to indicate that characters that
    * correspond to a signal should still be generated.
    *
+   * @remarks
    * When disabling raw mode, this option is ignored. This functionality
    * currently only works on Linux and Mac OS.
    */
@@ -115,10 +118,6 @@ type StdinImpl = Reshape<
   Partial<Stdin> & Pick<Stdin, "readSync" | "isTerminal" | "close">
 >;
 
-type Reshape<T> = Pick<T, keyof T>;
-
-const { assign, defineProperty } = Object;
-
 export class Stdin {
   constructor(impl?: StdinImpl) {
     if (!impl) {
@@ -137,14 +136,14 @@ export class Stdin {
         throw new Error("No Stdin implementation available");
       }
     }
-    assign(this, impl);
+    ObjectAssign(this, impl);
     this.readSync = this.readSync.bind(impl);
     this.read = (
       this.read ??= (p) => Promise.resolve(this.readSync(p))
     ).bind(impl);
     this.close = (this.close ??= () => {}).bind(impl);
     this.isTerminal = (this.isTerminal ??= () => false).bind(impl);
-    defineProperty(this, "readable", {
+    ObjectDefineProperty(this, "readable", {
       get() {
         if (impl && "readable" in impl) {
           return impl.readable;

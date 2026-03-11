@@ -2,7 +2,7 @@
 import { BoxObject, Canvas } from "./canvas/mod.ts";
 import type { Component } from "./component.ts";
 import { type EmitterEvent, EventEmitter } from "./event_emitter.ts";
-import type { InputEventRecord } from "./input_reader/mod.ts";
+import type { InputEventRecord } from "./input/mod.ts";
 import { Computed, type Signal } from "./signals/mod.ts";
 import type { Style } from "./theme.ts";
 import { type Rectangle, Stdin, Stdout } from "./types.ts";

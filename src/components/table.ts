@@ -100,20 +100,19 @@ export interface TableOptions extends Omit<ComponentOptions, "rectangle"> {
  *
  * ```
  */
-export class Table extends Component {
-  declare theme: TableTheme;
-  declare drawnObjects: {
-    frame: [
-      top: TextObject,
-      bottom: TextObject,
-      spacer: TextObject,
-      left: BoxObject,
-      right: BoxObject,
-    ];
+export class Table extends Component<{
+  frame: [
+    top: TextObject,
+    bottom: TextObject,
+    spacer: TextObject,
+    left: BoxObject,
+    right: BoxObject,
+  ];
 
-    header: TextObject;
-    data: TextObject[];
-  };
+  header: TextObject;
+  data: TextObject[];
+}> {
+  declare theme: TableTheme;
 
   data: Signal<string[][]>;
   headers: Signal<TableHeader<true>[]>;

@@ -86,9 +86,7 @@ export interface LabelOptions extends Omit<ComponentOptions, "rectangle"> {
  * })
  * ```
  */
-export class Label extends Component {
-  declare drawnObjects: { texts: TextObject[] };
-
+export class Label extends Component<{ texts: TextObject[] }> {
   #valueLines: Signal<string[]>;
 
   text: Signal<string>;

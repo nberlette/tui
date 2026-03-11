@@ -57,9 +57,7 @@ export interface TextOptions extends Omit<ComponentOptions, "rectangle"> {
  * })
  * ```
  */
-export class Text extends Component {
-  declare drawnObjects: { text: TextObject };
-
+export class Text extends Component<{ text: TextObject }> {
   text: Signal<string>;
   overwriteRectangle: Signal<boolean>;
   multiCodePointSupport: Signal<boolean>;

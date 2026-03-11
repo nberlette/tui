@@ -29,7 +29,6 @@ export function decodeMouseSGR(
   const action = code.at(-1);
   if (!code.startsWith("\x1b[<") || (action !== "m" && action !== "M")) {
     return undefined;
-    SSS;
   }
 
   const release = action === "m";

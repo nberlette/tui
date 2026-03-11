@@ -141,19 +141,19 @@ export class TextObject extends Renderable<"text"> {
     });
   }
 
-  draw(): void {
+  override draw(): void {
     this.#updateEffect.resume();
     this.rectangle.subscribe(this.#rectangleSubscription);
     super.draw();
   }
 
-  erase(): void {
+  override erase(): void {
     this.#updateEffect.pause();
     this.rectangle.unsubscribe(this.#rectangleSubscription);
     super.erase();
   }
 
-  updateMovement(): void {
+  override updateMovement(): void {
     const { objectsUnder, previousRectangle } = this;
     const rectangle = this.rectangle.peek();
 
@@ -204,7 +204,7 @@ export class TextObject extends Renderable<"text"> {
     }
   }
 
-  rerender(): void {
+  override rerender(): void {
     const { canvas, valueChars, omitCells, rerenderCells } = this;
 
     const { frameBuffer, rerenderQueue } = canvas;

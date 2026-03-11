@@ -13,7 +13,7 @@ export type EventListener<
  * Type for creating new arguments
  *  - Required as a workaround for simple tuples and arrays types not working properly
  */
-export type EmitterEvent<Args extends unknown[] = unknown[]> = {
+export type EmitterEvent<Args extends readonly unknown[] = unknown[]> = {
   args: Args;
 };
 

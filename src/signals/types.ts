@@ -10,6 +10,7 @@ export interface Subscription<T> {
 export interface Dependency {
   /** Attach dependant to this Dependency */
   depend(dependant: Dependant): void;
+
   /** All dependants that rely on this Dependency */
   dependants?: Set<Dependant>;
 }
@@ -18,10 +19,12 @@ export interface Dependency {
 export interface Dependant {
   /** Set of all dependencies Dependant relies on */
   dependencies: Set<Dependency>;
-  /** Destroy dependant, clear its dependencies */
-  dispose(): void;
+
   /** Method which updates Dependants state/value */
   update(cause: Dependency | Dependant): void;
+
+  /** Destroy dependant, clear its dependencies */
+  dispose(): void;
 }
 
 /** Element which relies on dependencies to function and updates either after specified interval or when flusher gets flushed */
@@ -30,4 +33,14 @@ export interface LazyDependant extends Dependant {
   interval?: number;
   flusher?: Flusher;
   lastFired: number;
+}
+
+export type Dependish = Dependency | (Dependency & Dependant);
+
+export interface Disposable {
+  [Symbol.dispose](): void;
+}
+
+export interface AsyncDisposable {
+  [Symbol.asyncDispose](): void | Promise<void>;
 }

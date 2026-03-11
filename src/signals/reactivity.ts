@@ -70,23 +70,15 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
   if (watchMapUpdates) {
     _$set = function $set(key: MapKeyType, value: MapValueType) {
       const previousValue = map.get(key);
-
       set(key, value);
-
-      if (value !== previousValue) {
-        signal.propagate();
-      }
+      if (value !== previousValue) signal.propagate();
       return map;
     };
   } else {
     _$set = function $step(key: MapKeyType, value: MapValueType) {
       const { size } = map;
-
       set(key, value);
-
-      if (map.size > size) {
-        signal.propagate();
-      }
+      if (map.size > size) signal.propagate();
       return map;
     };
   }
@@ -98,9 +90,7 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
   const del = map.delete.bind(map);
   function $delete(key: MapKeyType) {
     const removed = del(key);
-    if (removed) {
-      signal.propagate();
-    }
+    if (removed) signal.propagate();
     return removed;
   }
 
@@ -108,9 +98,7 @@ export function makeMapMethodsReactive<T extends Map<unknown, unknown>, S>(
   function $clear() {
     const { size } = map;
     clear();
-    if (size > 0) {
-      signal.propagate();
-    }
+    if (size > 0) signal.propagate();
   }
 
   return map;
@@ -137,33 +125,23 @@ export function makeSetMethodsReactive<T extends Set<unknown>, S>(
   const add = set.add.bind(set);
   function $add(value: Parameters<T["add"]>[0]) {
     const { size } = set;
-
     add(value);
-
-    if (set.size > size) {
-      signal.propagate();
-    }
+    if (set.size > size) signal.propagate();
     return set;
   }
 
   const del = set.delete.bind(set);
   function $delete(value: Parameters<T["delete"]>[0]) {
     const removed = del(value);
-    if (removed) {
-      signal.propagate();
-    }
+    if (removed) signal.propagate();
     return removed;
   }
 
   const clear = set.clear.bind(set);
   function $clear() {
     const { size } = set;
-
     clear();
-
-    if (size > 0) {
-      signal.propagate();
-    }
+    if (size > 0) signal.propagate();
   }
 
   return set;
@@ -201,21 +179,15 @@ export function makeArrayMethodsReactive<T extends Array<unknown>, S>(
   const pop = array.pop.bind(array);
   function $pop() {
     const { length } = array;
-
     const output = pop();
-
-    if (length > 0) {
-      signal.propagate();
-    }
+    if (length > 0) signal.propagate();
     return output;
   }
 
   const splice = array.splice.bind(array);
   function $splice(start: number, deleteCount: number, ...items: unknown[]) {
     const output = splice(start, deleteCount, ...items);
-    if (output.length > 0) {
-      signal.propagate();
-    }
+    if (output.length > 0) signal.propagate();
     return output;
   }
 

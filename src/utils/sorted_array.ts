@@ -51,8 +51,13 @@ export class SortedArray<T = unknown> extends Array<T> {
     return super.copyWithin(target, start, end).sort(this.compareFn);
   }
 
-  override sort(compareFn?: (a: T, b: T) => number): this {
-    return super.sort(compareFn ?? this.compareFn), this;
+  override sort<This = void>(
+    compareFn?: (this: This, a: T, b: T) => number,
+    thisArg?: This,
+  ): this {
+    compareFn ??= this.compareFn;
+    if (thisArg) compareFn = compareFn?.bind(thisArg);
+    return super.sort(compareFn), this;
   }
 
   override fill(value: T, start?: number, end?: number): this {

@@ -3,15 +3,7 @@ import { Signal } from "./signal.ts";
 import type { Dependant, Dependency } from "./types.ts";
 
 import { activeSignals, trackDependencies } from "./dependency_tracking.ts";
-
-/** Thrown whenever someone tries to directly modify `Computed.value` */
-export class ComputedReadOnlyError extends Error {
-  constructor() {
-    super(
-      "Computed is read-only, you can't (and shouldn't!) directly modify its value",
-    );
-  }
-}
+import { ComputedReadOnlyError } from "./errors.ts";
 
 /** Function that's used to calculate `Computed`'s value */
 export interface Computable<T> {
@@ -75,18 +67,19 @@ export class Computed<T> extends Signal<T> implements Dependant, Dependency {
     if (
       this.$value !== (this.$value = this.computable(cause)) ||
       this.forceUpdateValue
-    ) {
-      this.propagate(cause);
-    }
+    ) this.propagate(cause);
   }
 
   override dispose(): void {
     super.dispose();
 
-    const { dependencies } = this;
-    for (const dependency of dependencies) {
-      dependency.dependants!.delete(this);
-      dependencies.delete(dependency);
+    for (const dependency of this.dependencies) {
+      dependency.dependants?.delete(this);
+      this.dependencies.delete(dependency);
     }
   }
+}
+
+export function computed<T>(computable: Computable<T>): Computed<T> {
+  return new Computed(computable);
 }
