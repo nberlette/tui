@@ -1,8 +1,12 @@
 // Copyright 2023 Im-Beast. MIT license.
 
 import {
+  capitalize,
   characterWidth,
+  cropToWidth,
+  getMultiCodePointCharacters,
   insertAt,
+  isFinalAnsiByte,
   stripStyles,
   textWidth,
   UNICODE_CHAR_REGEXP,
@@ -57,5 +61,25 @@ Deno.test("utils/strings.ts", async (t) => {
   await t.step("textWidth()", () => {
     assertEquals(textWidth(fullWidths.join("")), fullWidths.length * 2);
     assertEquals(textWidth("Hello"), 5);
+  });
+
+  await t.step("getMultiCodePointCharacters()", () => {
+    assertEquals(getMultiCodePointCharacters("A👀B"), ["A", "👀", "B"]);
+    assertEquals(getMultiCodePointCharacters(""), []);
+  });
+
+  await t.step("cropToWidth()", () => {
+    assertEquals(cropToWidth("abcdef", 3), "abc");
+    assertEquals(cropToWidth("a界b", 2), "a ");
+  });
+
+  await t.step("isFinalAnsiByte()", () => {
+    assertEquals(isFinalAnsiByte("A"), true);
+    assertEquals(isFinalAnsiByte("m"), true);
+    assertEquals(isFinalAnsiByte("p"), false);
+  });
+
+  await t.step("capitalize()", () => {
+    assertEquals(capitalize("hello"), "Hello");
   });
 });
