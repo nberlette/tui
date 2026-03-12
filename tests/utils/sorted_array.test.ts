@@ -1,10 +1,27 @@
 // Copyright 2023 Im-Beast. MIT license.
 
+import assert from "node:assert";
 import { SortedArray } from "../../src/utils/sorted_array.ts";
 import { assertEquals } from "../deps.ts";
 
-Deno.test("utils/sorted_array.ts", async (t) => {
-  await t.step("SortedArray", () => {
+const { test: describe } = Deno;
+
+describe("sortedArray", async ({ step: it }) => {
+  await it("should be a function named 'SortedArray'", () => {
+    assertEquals(typeof SortedArray, "function");
+    assertEquals(SortedArray.name, "SortedArray");
+  });
+  await it("should be a class constructor", () => {
+    const instance = new SortedArray();
+    assertEquals(instance instanceof SortedArray, true);
+  });
+  await it("should require the `new` operator", () => {
+    assert.throws(() => {
+      // @ts-expect-error - this is intentional
+      SortedArray();
+    }, TypeError);
+  });
+  await it("should maintain a sorted order", () => {
     const array = new SortedArray<number>((a, b) => b - a);
 
     array.push(1, 10, -5, -2, 11, 100, -1000);

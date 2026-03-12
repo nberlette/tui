@@ -72,7 +72,13 @@
   "tasks": {
     "example:basic": "deno -Aq --watch ./examples/demo.ts",
     "example:layout": "deno -Aq --watch ./examples/layout.ts",
-    "example:calculator": "deno -Aq --watch ./examples/calculator.ts"
+    "example:calculator": "deno -Aq --watch ./examples/calculator.ts",
+    "test": "deno test -A --no-check=remote --parallel --coverage=.coverage",
+    "test:no-check": "deno test -A --no-check --parallel --coverage=.coverage",
+    "lint": "deno lint",
+    "lint:fix": "deno lint --fix",
+    "fmt": "deno fmt",
+    "fmt:check": "deno fmt --check"
   },
   "lint": {
     "exclude": ["./examples"]
